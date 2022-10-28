@@ -1,0 +1,95 @@
+# frozen_string_literal: true
+
+require "spec_helper"
+
+require "fusuma/plugin/detectors/detector"
+require "fusuma/plugin/buffers/gesture_buffer"
+require "fusuma/plugin/events/event"
+
+module Fusuma
+  module Plugin
+    module Detectors
+      RSpec.describe ThumbsenseDetector do
+        before do
+          @detector = ThumbsenseDetector.new
+          @thumbsense_buffer = Buffers::ThumbsenseBuffer.new
+          @keypress_buffer = Buffers::KeypressBuffer.new
+          @buffers = [@thumbsense_buffer, @keypress_buffer]
+
+          @thumbsense_event_generator = lambda { |time, finger, status|
+            Events::Event.new(
+              time: time,
+              tag: "libinput_thumbsense_parser",
+              record: Events::Records::GestureRecord.new(
+                finger: finger,
+                gesture: "thumbsense",
+                status: status,
+                delta: Events::Records::GestureRecord::Delta.new(0, 0, 0, 0)
+              )
+            )
+          }
+          @keypress_event_generator = lambda { |time, code, status|
+            Events::Event.new(
+              time: time,
+              tag: "keypress_parser",
+              record: Events::Records::KeypressRecord.new(
+                code: code,
+                status: status
+              )
+            )
+          }
+        end
+
+        describe "#detect" do
+          context "with 1 finger thumbsense events in buffer" do
+            before do
+              [
+                @thumbsense_event_generator.call(Time.now, 1, "begin"),
+                @thumbsense_event_generator.call(Time.now, 1, "end")
+              ].each { |event| @thumbsense_buffer.buffer(event) }
+            end
+
+            context "without keypress" do
+              before do
+                @keypress_buffer.clear
+              end
+
+              it "does not generate thumbsense index" do
+                expect(@detector.detect(@buffers)).to be_nil
+              end
+            end
+
+            context "with keypress" do
+              before do
+                [
+                  @keypress_event_generator.call(Time.now, "J", "pressed"),
+                  # @keypress_event_generator.call(Time.now, "J", "released")
+                ].each { |event| @keypress_buffer.buffer(event) }
+              end
+
+              it "generate thumbsense index" do
+                event = @detector.detect(@buffers)
+                expect(event.record).to be_a Events::Records::IndexRecord
+              end
+            end
+          end
+
+          context "with 2 fingers thumbsense events in buffer" do
+            before do
+              [
+                @thumbsense_event_generator.call(Time.now, 1, "begin"),
+                @thumbsense_event_generator.call(Time.now, 2, "touch"),
+                @thumbsense_event_generator.call(Time.now, 2, "release")
+              ].each { |event| @thumbsense_buffer.buffer(event) }
+            end
+
+            it "generates thumbsense index" do
+              key_symbol = @detector.detect(@buffers).record.index.keys.map(&:symbol)
+              expect(key_symbol).to eq [:thumbsense, 2]
+            end
+          end
+        end
+      end
+    end
+  end
+end
