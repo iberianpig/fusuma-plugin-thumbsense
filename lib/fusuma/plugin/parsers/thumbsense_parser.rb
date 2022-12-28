@@ -29,6 +29,11 @@ module Fusuma
           when %r{\sevent\d+\s+-\sbutton state: touch (?<finger>[[:digit:]]) .* to BUTTON_STATE_NONE}
             status = "end"
             finger = $~[:finger].to_i + 1
+
+          # palm
+          when %r{\sevent\d+\s+-\spalm: touch (?<finger>[[:digit:]]) .*}
+            status = "palm"
+            finger = $~[:finger].to_i + 1
           else
             return
           end

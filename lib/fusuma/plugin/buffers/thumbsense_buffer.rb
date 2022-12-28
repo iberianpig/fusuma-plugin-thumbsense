@@ -17,7 +17,8 @@ module Fusuma
         def clear_expired(*)
           return if @events.empty?
 
-          return if begin?(@events.last)
+          # skip palm/begin record
+          return if !ended?(@events.last)
 
           released_finger = @events.last.record.finger
           @events.delete_if { |e| e.record.finger == released_finger }

@@ -12,7 +12,14 @@ module Fusuma
         # @return [TrueClass] when keeping it
         # @return [FalseClass] when discarding it
         def keep?(record)
-          (record.to_s =~ %r{\sevent\d+\s+-\sbutton state: touch (?<finger>[[:digit:]])})
+          case record.to_s
+          when %r{\sevent\d+\s+-\sbutton state: touch (?<finger>[[:digit:]])}
+            true
+          when %r{\sevent\d+\s+-\spalm: touch (?<finger>[[:digit:]])}
+            true
+          else
+            false
+          end
         end
       end
     end

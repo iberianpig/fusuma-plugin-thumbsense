@@ -20,9 +20,11 @@ module Fusuma
         def detect(buffers)
           thumbsense_buffer = buffers.find { |b| b.type == BUFFER_TYPE }
 
-          if thumbsense_buffer.empty? # || moved?(thumbsense_buffer: thumbsense_buffer, gesture_buffer: gesture_buffer)
+          if thumbsense_buffer.empty?
             return
           end
+
+          return if palm_detected?(thumbsense_buffer)
 
           return unless touching?(thumbsense_buffer)
 
@@ -34,6 +36,8 @@ module Fusuma
 
           create_event(record: Events::Records::IndexRecord.new(index: index))
         end
+
+        private
 
         def detect_keypress(buffers)
           keypress_buffer = buffers.find { |b| b.type == "keypress" }
@@ -75,17 +79,10 @@ module Fusuma
         end
 
         # @return [TrueClass, FalseClass]
-        def moved?(thumbsense_buffer:, gesture_buffer:)
-          thumbsense_buffer.events.any? { |e| e.record.status == "move" } ||
-            # FIXME: Find good parameter for ignoring
-            gesture_buffer.events.count { |e| thumbsense_buffer.events.first.time < e.time } > 5
-        end
-
-        # @return [TrueClass, FalseClass]
         def released_all?(buffer)
           touch_num = buffer.events.count { |e| (e.record.status == "begin") }
           release_num = buffer.events.count { |e| e.record.status == "end" }
-          MultiLogger.info(touch_num: touch_num, release_num: release_num)
+          MultiLogger.debug(touch_num: touch_num, release_num: release_num)
 
           case buffer.finger
           when 1
@@ -101,78 +98,10 @@ module Fusuma
           end
         end
 
-        def calc_holding_time(thumbsense_buffer:, timer_buffer:)
-          last_time = if timer_buffer && !timer_buffer.empty? &&
-              (thumbsense_buffer.events.last.time < timer_buffer.events.last.time)
-            timer_buffer.events.last.time
-          else
-            thumbsense_buffer.events.last.time
-          end
-          last_time - thumbsense_buffer.events.first.time
-        end
-
-        private
-
-        def enough?(index:, direction:)
-          enough_interval?(index: index, direction: direction)
-        end
-
-        def enough_interval?(index:, direction:)
-          return true if first_time?
-          return true if (Time.now - @last_time) > interval_time(index: index, direction: direction)
-
-          false
-        end
-
-        def interval_time(index:, direction:)
-          @interval_time ||= {}
-          @interval_time[index.cache_key] ||= begin
-            keys_specific = Config::Index.new [*index.keys, "interval"]
-            keys_global = Config::Index.new ["interval", direction]
-            config_value = Config.search(keys_specific) ||
-              Config.search(keys_global) || 1
-            BASE_INTERVAL * config_value
-          end
+        def palm_detected?(buffer)
+          buffer.events.any? { |e| (e.record.status == "palm") }
         end
       end
-
-      # class Keypress
-      #   SOURCES = %w[keypress].freeze
-      #
-      #   # @param buffers [Array<Event>]
-      #   # @return [Array<String>] if pressing keys are detected
-      #   # @return [NilClass] if pressing keys are NOT detected
-      #   def detect_codes(buffers)
-      #     keypress_buffer = find_buffer(buffers)
-      #
-      #     return if keypress_buffer.empty?
-      #     require 'debug'; debugger
-      #
-      #     codes = pressed_codes(keypress_buffer.events.map(&:record))
-      #
-      #     return if codes.empty?
-      #
-      #     codes
-      #   end
-      #
-      #   private
-      #
-      #   def find_buffer(buffers)
-      #     buffers.find { |b| b.type == "keypress" }
-      #   end
-      #
-      #   def pressed_codes(records)
-      #     codes = []
-      #     records.each do |r|
-      #       if r.status == "pressed"
-      #         codes << r.code
-      #       else
-      #         codes.delete_if { |code| code == r.code }
-      #       end
-      #     end
-      #     codes
-      #   end
-      # end
     end
   end
 end

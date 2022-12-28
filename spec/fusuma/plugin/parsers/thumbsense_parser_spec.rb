@@ -55,6 +55,27 @@ module Fusuma
             end
           end
 
+          context "with palm touch" do
+            before do
+              lines_str = <<~LINES
+                9652: event7  - button state: touch 0 from BUTTON_STATE_NONE    event BUTTON_EVENT_IN_AREA     to BUTTON_STATE_AREA
+                  ... event7  - gesture state GESTURE_STATE_NONE → GESTURE_EVENT_FINGER_DETECTED → GESTURE_STATE_UNKNOWN
+                9654: event7  - palm: touch 0 (TOUCH_UPDATE), palm detected (tool-palm)
+                  ... event7  - gesture state GESTURE_STATE_UNKNOWN → GESTURE_EVENT_RESET → GESTURE_STATE_NONE
+                9668: event7  - palm: touch 0 (TOUCH_END), palm detected (tool-palm)
+                  ... event7  - button state: touch 0 from BUTTON_STATE_AREA    event BUTTON_EVENT_UP          to BUTTON_STATE_NONE
+              LINES
+              @records = lines_str.split("\n").map do |line|
+                @parser.parse_record(line)
+              end.compact
+            end
+
+            it "generate touch record" do
+              expect(@records.map(&:gesture)).to all(eq "touch")
+              expect(@records.map(&:finger)).to eq [1, 1, 1, 1]
+              expect(@records.map(&:status)).to eq ["begin", "palm", "palm", "end"]
+            end
+          end
         end
       end
     end

@@ -15,7 +15,7 @@ module Fusuma
           @buffer = ThumbsenseBuffer.new
           @event_generator = lambda { |time = nil, finger = 1, status = "begin"|
             Events::Event.new(time: time,
-              tag: "libinput_thumbsense_parser",
+              tag: "thumbsense_parser",
               record: Events::Records::GestureRecord.new(
                 status: status,
                 gesture: "thumbsense",
