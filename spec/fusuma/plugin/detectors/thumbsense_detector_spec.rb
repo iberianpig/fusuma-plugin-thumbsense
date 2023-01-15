@@ -65,11 +65,11 @@ module Fusuma
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
-              it "generate thumbsense index" do
+              it "generates thumbsense pressed" do
                 event = @detector.detect(@buffers)
                 expect(event.record).to be_a Events::Records::IndexRecord
                 key_symbol = event.record.index.keys.map(&:symbol)
-                expect(key_symbol).to eq [:thumbsense, :J]
+                expect(key_symbol).to eq [:thumbsense, :J, :pressed]
               end
             end
 
@@ -81,8 +81,11 @@ module Fusuma
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
-              it "does NOT detect thumbsense" do
-                expect(@detector.detect(@buffers)).to be_nil
+              it "generates thumbsense released" do
+                event = @detector.detect(@buffers)
+                expect(event.record).to be_a Events::Records::IndexRecord
+                key_symbol = event.record.index.keys.map(&:symbol)
+                expect(key_symbol).to eq [:thumbsense, :J, :released]
               end
             end
           end
@@ -108,7 +111,6 @@ module Fusuma
           end
 
           context "with palm event in buffer" do
-
             before do
               [
                 @thumbsense_event_generator.call(Time.now, 1, "palm")
@@ -146,9 +148,9 @@ module Fusuma
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
-              it "generate thumbsense index" do
+              it "generates thumbsense pressed" do
                 key_symbol = @detector.detect(@buffers).record.index.keys.map(&:symbol)
-                expect(key_symbol).to eq [:thumbsense, :J]
+                expect(key_symbol).to eq [:thumbsense, :J, :pressed]
               end
             end
           end

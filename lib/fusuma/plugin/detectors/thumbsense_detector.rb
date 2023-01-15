@@ -28,47 +28,35 @@ module Fusuma
 
           return unless touching?(thumbsense_buffer)
 
-          codes = detect_keypress(buffers)
 
-          return unless codes
+          keypress_record = detect_keypress_record(buffers)
 
-          index = create_index(codes: codes)
+          return if keypress_record.nil?
+
+          index = create_index(code: keypress_record.code, status: keypress_record.status)
 
           create_event(record: Events::Records::IndexRecord.new(index: index))
         end
 
         private
 
-        def detect_keypress(buffers)
+        def detect_keypress_record(buffers)
           keypress_buffer = buffers.find { |b| b.type == "keypress" }
 
           return if keypress_buffer.empty?
 
-          codes = pressed_codes(keypress_buffer.events.map(&:record))
-
-          return if codes.empty?
-
-          codes
+          keypress_buffer.events.last.record
         end
 
-        def pressed_codes(records)
-          codes = []
-          records.each do |r|
-            if r.status == "pressed"
-              codes << r.code
-            else
-              codes.delete_if { |code| code == r.code }
-            end
-          end
-          codes
-        end
-
+        # @param code [String]
+        # @param status [String]
         # @return [Config::Index]
-        def create_index(codes:)
+        def create_index(code:, status:)
           Config::Index.new(
             [
               Config::Index::Key.new("thumbsense"),
-              Config::Index::Key.new(codes.join("+"))
+              Config::Index::Key.new(code),
+              Config::Index::Key.new(status)
             ]
           )
         end
