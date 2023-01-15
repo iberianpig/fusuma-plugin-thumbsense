@@ -10,41 +10,42 @@ module Fusuma
   module Plugin
     module Detectors
       RSpec.describe ThumbsenseDetector do
+        def thumbsense_generator(finger:, status:, time: Time.now)
+          Events::Event.new(
+            time: time,
+            tag: "thumbsense_parser",
+            record: Events::Records::GestureRecord.new(
+              finger: finger,
+              gesture: "thumbsense",
+              status: status,
+              delta: Events::Records::GestureRecord::Delta.new(0, 0, 0, 0)
+            )
+          )
+        end
+
+        def keypress_generator(code:, status:, time: Time.now)
+          Events::Event.new(
+            time: time,
+            tag: "keypress_parser",
+            record: Events::Records::KeypressRecord.new(
+              code: code,
+              status: status
+            )
+          )
+        end
+
         before do
           @detector = ThumbsenseDetector.new
           @thumbsense_buffer = Buffers::ThumbsenseBuffer.new
           @keypress_buffer = Buffers::KeypressBuffer.new
           @buffers = [@thumbsense_buffer, @keypress_buffer]
-
-          @thumbsense_event_generator = lambda { |time, finger, status|
-            Events::Event.new(
-              time: time,
-              tag: "thumbsense_parser",
-              record: Events::Records::GestureRecord.new(
-                finger: finger,
-                gesture: "thumbsense",
-                status: status,
-                delta: Events::Records::GestureRecord::Delta.new(0, 0, 0, 0)
-              )
-            )
-          }
-          @keypress_event_generator = lambda { |time, code, status|
-            Events::Event.new(
-              time: time,
-              tag: "keypress_parser",
-              record: Events::Records::KeypressRecord.new(
-                code: code,
-                status: status
-              )
-            )
-          }
         end
 
         describe "#detect" do
           context "with 1 finger thumbsense begin event in buffer" do
             before do
               [
-                @thumbsense_event_generator.call(Time.now, 1, "begin")
+                thumbsense_generator(finger: 1, status: "begin")
               ].each { |event| @thumbsense_buffer.buffer(event) }
             end
 
@@ -61,7 +62,7 @@ module Fusuma
             context "when J key is pressed" do
               before do
                 [
-                  @keypress_event_generator.call(Time.now, "J", "pressed")
+                  keypress_generator(code: "J", status: "pressed")
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
@@ -76,8 +77,8 @@ module Fusuma
             context "when J key is pressed and released" do
               before do
                 [
-                  @keypress_event_generator.call(Time.now, "J", "pressed"),
-                  @keypress_event_generator.call(Time.now, "J", "released")
+                  keypress_generator(code: "J", status: "pressed"),
+                  keypress_generator(code: "J", status: "released")
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
@@ -93,14 +94,14 @@ module Fusuma
           context "with 1 finger thumbsense begin/end events in buffer" do
             before do
               [
-                @thumbsense_event_generator.call(Time.now, 1, "begin"),
-                @thumbsense_event_generator.call(Time.now, 1, "end")
+                thumbsense_generator(finger: 1, status: "begin"),
+                thumbsense_generator(finger: 1, status: "end")
               ].each { |event| @thumbsense_buffer.buffer(event) }
             end
             context "with keypress" do
               before do
                 [
-                  @keypress_event_generator.call(Time.now, "J", "pressed")
+                  keypress_generator(code: "J", status: "pressed")
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
@@ -113,7 +114,7 @@ module Fusuma
           context "with palm event in buffer" do
             before do
               [
-                @thumbsense_event_generator.call(Time.now, 1, "palm")
+                thumbsense_generator(finger: 1, status: "palm")
               ].each { |event| @thumbsense_buffer.buffer(event) }
             end
 
@@ -124,7 +125,7 @@ module Fusuma
             context "when J key is pressed" do
               before do
                 [
-                  @keypress_event_generator.call(Time.now, "J", "pressed")
+                  keypress_generator(code: "J", status: "pressed")
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
@@ -137,14 +138,14 @@ module Fusuma
           context "with 2 fingers thumbsense events in buffer" do
             before do
               [
-                @thumbsense_event_generator.call(Time.now, 1, "begin"),
-                @thumbsense_event_generator.call(Time.now, 2, "begin")
+                thumbsense_generator(finger: 1, status: "begin"),
+                thumbsense_generator(finger: 2, status: "begin")
               ].each { |event| @thumbsense_buffer.buffer(event) }
             end
             context "with keypress" do
               before do
                 [
-                  @keypress_event_generator.call(Time.now, "J", "pressed")
+                  keypress_generator(code: "J", status: "pressed")
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
