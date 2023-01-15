@@ -7,12 +7,9 @@ module Fusuma
     module Detectors
       # Detect tap event
       class ThumbsenseDetector < Detector
-        SOURCES = %w[tap keypress timer].freeze
+        SOURCES = %w[tap keypress].freeze
         BUFFER_TYPE = "thumbsense"
         GESTURE_RECORD_TYPE = "tap"
-
-        BASE_INTERVAL = 0.5
-        BASE_TAP_TIME = 0.4
 
         # @param buffers [Array<Buffer>]
         # @return [Event] if event is detected
