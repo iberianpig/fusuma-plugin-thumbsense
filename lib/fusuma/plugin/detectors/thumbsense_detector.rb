@@ -32,7 +32,7 @@ module Fusuma
 
           index = create_index(code: keypress_record.code, status: keypress_record.status)
 
-          create_event(record: Events::Records::IndexRecord.new(index: index))
+          create_event(record: Events::Records::IndexRecord.new(index: index, trigger: :repeat))
         end
 
         private
