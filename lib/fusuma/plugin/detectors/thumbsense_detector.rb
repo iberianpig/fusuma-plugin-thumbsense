@@ -17,18 +17,17 @@ module Fusuma
         def detect(buffers)
           thumbsense_buffer = buffers.find { |b| b.type == BUFFER_TYPE }
 
-
           return if thumbsense_buffer.empty?
 
           return if palm_detected?(thumbsense_buffer)
 
           return unless touching?(thumbsense_buffer)
 
-
           keypress_record = detect_keypress_record(buffers)
 
           return if keypress_record.nil?
 
+          # NOTE: set skippable begin/end index for omitting press/release key on executor
           status = case keypress_record.status.to_sym
           when :pressed
             :begin
@@ -39,7 +38,9 @@ module Fusuma
           end
           index = create_index(code: keypress_record.code, status: status)
 
-          create_event(record: Events::Records::IndexRecord.new(index: index, trigger: :repeat))
+          # NOTE: Pressing the key has both a start and an end,
+          # but since it is not a rapid press, it should be treated as a one-shot.
+          create_event(record: Events::Records::IndexRecord.new(index: index, trigger: :oneshot))
         end
 
         private
@@ -60,7 +61,7 @@ module Fusuma
             [
               Config::Index::Key.new("thumbsense"),
               Config::Index::Key.new(code),
-              Config::Index::Key.new(status)
+              Config::Index::Key.new(status, skippable: true)
             ]
           )
         end
