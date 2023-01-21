@@ -30,13 +30,13 @@ module Fusuma
           return if keypress_record.nil?
 
           status = case keypress_record.status.to_sym
-                   when :pressed
-                     :begin
-                   when :released
-                     :end
-                   else
-                     raise "unknown status: #{keypress_record.status}"
-                   end
+          when :pressed
+            :begin
+          when :released
+            :end
+          else
+            raise "unknown status: #{keypress_record.status}"
+          end
           index = create_index(code: keypress_record.code, status: status)
 
           create_event(record: Events::Records::IndexRecord.new(index: index, trigger: :repeat))
