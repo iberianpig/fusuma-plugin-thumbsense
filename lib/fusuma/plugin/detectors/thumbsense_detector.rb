@@ -17,9 +17,8 @@ module Fusuma
         def detect(buffers)
           thumbsense_buffer = buffers.find { |b| b.type == BUFFER_TYPE }
 
-          if thumbsense_buffer.empty?
-            return
-          end
+
+          return if thumbsense_buffer.empty?
 
           return if palm_detected?(thumbsense_buffer)
 
