@@ -70,7 +70,7 @@ module Fusuma
                 event = @detector.detect(@buffers)
                 expect(event.record).to be_a Events::Records::IndexRecord
                 key_symbol = event.record.index.keys.map(&:symbol)
-                expect(key_symbol).to eq [:thumbsense, :J, :pressed]
+                expect(key_symbol).to eq [:thumbsense, :J, :begin]
               end
             end
 
@@ -86,7 +86,7 @@ module Fusuma
                 event = @detector.detect(@buffers)
                 expect(event.record).to be_a Events::Records::IndexRecord
                 key_symbol = event.record.index.keys.map(&:symbol)
-                expect(key_symbol).to eq [:thumbsense, :J, :released]
+                expect(key_symbol).to eq [:thumbsense, :J, :end]
               end
             end
           end
@@ -151,7 +151,7 @@ module Fusuma
 
               it "generates thumbsense pressed" do
                 key_symbol = @detector.detect(@buffers).record.index.keys.map(&:symbol)
-                expect(key_symbol).to eq [:thumbsense, :J, :pressed]
+                expect(key_symbol).to eq [:thumbsense, :J, :begin]
               end
             end
           end
