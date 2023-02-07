@@ -66,7 +66,7 @@ module Fusuma
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
-              it "generates thumbsense pressed" do
+              it "detects thumbsense/J/begin" do
                 event = @detector.detect(@buffers)
                 expect(event.record).to be_a Events::Records::IndexRecord
                 key_symbol = event.record.index.keys.map(&:symbol)
@@ -75,14 +75,13 @@ module Fusuma
             end
 
             context "when J key is pressed and released" do
-              before do
-                [
-                  keypress_generator(code: "J", status: "pressed"),
-                  keypress_generator(code: "J", status: "released")
-                ].each { |event| @keypress_buffer.buffer(event) }
-              end
+              it "detects thumbsense/J/end" do
+                @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
+                expect(@detector.detect(@buffers)).to be_nil
+                @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed"))
+                expect(@detector.detect(@buffers)).not_to be_nil
+                @keypress_buffer.buffer(keypress_generator(code: "J", status: "released"))
 
-              it "generates thumbsense released" do
                 event = @detector.detect(@buffers)
                 expect(event.record).to be_a Events::Records::IndexRecord
                 key_symbol = event.record.index.keys.map(&:symbol)
@@ -149,9 +148,67 @@ module Fusuma
                 ].each { |event| @keypress_buffer.buffer(event) }
               end
 
-              it "generates thumbsense pressed" do
+              it "detects thumbsense/J/begin" do
                 key_symbol = @detector.detect(@buffers).record.index.keys.map(&:symbol)
                 expect(key_symbol).to eq [:thumbsense, :J, :begin]
+              end
+            end
+          end
+
+          context "with tap while pressing a key" do
+            before do
+              [
+                keypress_generator(code: "J", status: "pressed")
+              ].each { |event| @keypress_buffer.buffer(event) }
+              [
+                thumbsense_generator(finger: 1, status: "begin")
+              ].each { |event| @thumbsense_buffer.buffer(event) }
+            end
+
+            it "does NOT detect thumbsense" do
+              expect(@detector.detect(@buffers)).to be_nil
+            end
+          end
+
+          context "when released finger from touchpad" do
+            context "with hold down J/K key before released all fingers from touchpad" do
+              before do
+                @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
+                @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed"))
+                @detector.detect(@buffers) # add @continue_keycode << "J"
+                @keypress_buffer.buffer(keypress_generator(code: "K", status: "pressed"))
+                @detector.detect(@buffers) # add @continue_keycode << "K"
+                @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "end"))
+                @detector.detect(@buffers) # does NOT detect thumbsense here
+                @thumbsense_buffer.clear # but it continues thumbsense mode
+              end
+
+              it "detects thumbsense event with releasing keys (K/J)" do
+                @keypress_buffer.buffer(keypress_generator(code: "K", status: "released"))
+                key_symbol = @detector.detect(@buffers).record.index.keys.map(&:symbol)
+                expect(key_symbol).to eq [:thumbsense, :K, :end]
+
+                @keypress_buffer.buffer(keypress_generator(code: "J", status: "released"))
+                key_symbol = @detector.detect(@buffers).record.index.keys.map(&:symbol)
+                expect(key_symbol).to eq [:thumbsense, :J, :end]
+              end
+
+              it "detects thumbsense with releaseing keys A(not holded down)" do
+                @keypress_buffer.buffer(keypress_generator(code: "A", status: "released"))
+                expect(@detector.detect(@buffers)).to be_nil
+              end
+            end
+
+            context "with released key" do
+              before do
+                @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
+                @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed"))
+                @detector.detect(@buffers) # add @continue_keycode << "J"
+                @keypress_buffer.buffer(keypress_generator(code: "J", status: "released"))
+              end
+              it "detects thumbsense/J/end(canceled)" do
+                key_symbol = @detector.detect(@buffers).record.index.keys.map(&:symbol)
+                expect(key_symbol).to eq [:thumbsense, :J, :end]
               end
             end
           end
