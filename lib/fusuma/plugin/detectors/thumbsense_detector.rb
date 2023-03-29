@@ -38,7 +38,7 @@ module Fusuma
             return if thumbsense_event.nil?
 
             # touch event while pressing the key
-            return if keypress_event.time < thumbsense_buffer.events.last.time
+            return if keypress_event.time < thumbsense_event.time
 
             # Even after touch is finished, keep thumbsense mode if you are pressing the key.
             # You can continue dragging even after lifting your finger from touchpad.
