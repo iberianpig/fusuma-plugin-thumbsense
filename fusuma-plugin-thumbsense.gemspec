@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   # support bionic (18.04LTS) 2.5.1
   spec.add_dependency "fusuma", "~> 2.0"
   spec.add_dependency "fusuma-plugin-keypress", ">= 0.5"
+  spec.add_dependency "fusuma-plugin-remap"
   spec.metadata = {
     "rubygems_mfa_required" => "true"
   }

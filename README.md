@@ -36,25 +36,21 @@ plugin:
 ## Properties
 
 ### Thumbsense
-Add `thumbsense:` property in `~/.config/fusuma/config.yml`.
+
+First, add the `thumbsense` context to `~/.config/fusuma/config.yml`.
+The context is separated by `---` and specified by `context: thumbsense`.
 
 ## Example
 
-Set `thumbsense:` property and values under gesture in `~/.config/fusuma/config.yml`.
+Set the following code in `~/.config/fusuma/config.yml`.
 
 ```yaml
-thumbsense:
-  J: 
-    command: 
-      echo 'J key is pressed while touching touchpad'
-  K:
-    command: 
-      echo 'K key is pressed while touching touchpad'
+---
+context: thumbsense
 
-plugin:
-  inputs:
-    libinput_command_input:
-      show-keycodes: true
+remap:
+  J: BTN_LEFT
+  K: BTN_RIGHT
 ```
 
 ### TODO

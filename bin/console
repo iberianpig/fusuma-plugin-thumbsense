@@ -2,6 +2,9 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
+require "fusuma/plugin/manager"
+Fusuma::Plugin::Manager.require_base_plugins
+require "fusuma/plugin/remap"
 require "fusuma/plugin/thumbsense"
 
 # You can add fixtures and/or initialization code here to make experimenting

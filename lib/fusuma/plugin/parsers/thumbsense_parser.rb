@@ -38,8 +38,6 @@ module Fusuma
             return
           end
 
-          # puts ({status: status, gesture: gesture, finger: finger, delta: nil, record: record.to_s})
-
           Events::Records::GestureRecord.new(status: status, gesture: gesture, finger: finger, delta: nil)
         end
 

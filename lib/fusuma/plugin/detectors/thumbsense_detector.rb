@@ -2,19 +2,27 @@
 
 require "fusuma/plugin/detectors/detector"
 
+require "fusuma/plugin/remap/layer_manager"
+
 module Fusuma
   module Plugin
     module Detectors
-      # Detect tap event
+      # Detect Thumbsense context and change remap layer of fusuma-plugin-remap
       class ThumbsenseDetector < Detector
-        SOURCES = %w[thumbsense keypress].freeze
+        SOURCES = %w[thumbsense gesture keypress].freeze
         BUFFER_TYPE = "thumbsense"
-        GESTURE_RECORD_TYPE = "tap"
 
-        def initialize
-          super
-          @continue_keycode = Set.new
-        end
+        MODIFIER_KEYS = Set.new(%w[
+          CAPSLOCK
+          LEFTALT
+          LEFTCTRL
+          LEFTMETA
+          LEFTSHIFT
+          RIGHTALT
+          RIGHTCTRL
+          RIGHTSHIFT
+          RIGHTMETA
+        ])
 
         # @param buffers [Array<Buffer>]
         # @return [Event] if event is detected
@@ -22,78 +30,96 @@ module Fusuma
         def detect(buffers)
           thumbsense_buffer = buffers.find { |b| b.type == BUFFER_TYPE }
 
-          return if @continue_keycode.empty? && thumbsense_buffer.empty?
+          return if thumbsense_buffer.empty?
 
-          return if @continue_keycode.empty? && palm_detected?(thumbsense_buffer)
+          MultiLogger.debug("thumbsense_buffer: #{thumbsense_buffer.events.map(&:record).map { |r| "#{r.finger} #{r.gesture} #{r.status}" }}")
 
-          keypress_event = detect_keypress_event(buffers)
-          thumbsense_event = thumbsense_buffer.events.last
+          layer_manager = Fusuma::Plugin::Remap::LayerManager.instance
+          layer = {thumbsense: true}
 
-          return if keypress_event.nil?
-
-          # NOTE: begin/end index must be skippable for omitting press/release key on executor
-          keypress_status = case keypress_event.record.status.to_sym
-          when :pressed
-            # no touch event, only pressing key
-            return if thumbsense_event.nil?
-
-            # touch event while pressing the key
-            return if keypress_event.time < thumbsense_event.time
-
-            # Even after touch is finished, keep thumbsense mode if you are pressing the key.
-            # You can continue dragging even after lifting your finger from touchpad.
-            @continue_keycode.add keypress_event.record.code
-
-            return if touch_released?(thumbsense_buffer)
-
-            :begin
-          when :released
-            if @continue_keycode.delete?(keypress_event.record.code)
-              :end
-            else
-              return
-            end
-          else
-            raise "unknown status: #{keypress_event.record.status}"
+          if touch_released?(thumbsense_buffer)
+            layer_manager.send_layer(layer: layer, remove: true)
+            return
           end
-          index = create_index(code: keypress_event.record.code, status: keypress_status)
 
-          create_event(record: Events::Records::IndexRecord.new(index: index, trigger: :oneshot))
+          keypress_buffer = buffers.find { |b| b.type == "keypress" }
+          if pressed_codes(keypress_buffer).all? { |code| MODIFIER_KEYS.include?(code) }
+
+            # Even if the palm is detected, keep the thumbsense layer until `:end` event
+            if palm_detected?(thumbsense_buffer)
+              hold_events = fetch_hold_events(buffers)
+              MultiLogger.debug "hold_events: #{hold_events.map(&:record).map { |r| "#{r.finger} #{r.gesture} #{r.status}" }}"
+              if hold_events.empty? || hold_events.last.record.status != "begin"
+                layer_manager.send_layer(layer: layer, remove: true)
+                return
+              end
+            end
+
+            layer_manager.send_layer(layer: layer)
+            record = Events::Records::ContextRecord.new(
+              name: "thumbsense",
+              value: true
+            )
+            return create_event(record: record)
+          end
+          nil
+        end
+
+        # Change remap layer of fusuma-plugin-remap
+        # @param context [Hash]
+        def add_layer
+          Fusuma::Plugin::Remap::Layer.add({thumbsense: true})
+        end
+
+        # Remove remap layer of fusuma-plugin-remap
+        # @param context [Hash]
+        def remove_layer
+          Fusuma::Plugin::Remap::Layer.remove({thumbsense: true})
         end
 
         private
 
-        def detect_keypress_event(buffers)
-          keypress_buffer = buffers.find { |b| b.type == "keypress" }
-
-          return if keypress_buffer.empty?
-
-          keypress_buffer.events.last
+        def fetch_hold_events(buffers)
+          buffers.find { |b| b.type == "gesture" }
+            .select_from_last_begin
+            .select_by_events { |e| e.record.gesture == "hold" }.events
         end
 
-        # @param code [String]
-        # @param status [String]
-        # @return [Config::Index]
-        def create_index(code:, status:)
-          Config::Index.new(
-            [
-              Config::Index::Key.new("thumbsense"),
-              Config::Index::Key.new(code),
-              Config::Index::Key.new(status, skippable: true)
-            ]
-          )
+        def pressed_codes(keypress_buffer)
+          records = keypress_buffer.events.map(&:record)
+          codes = []
+          records.each do |r|
+            if r.status == "pressed"
+              codes << r.code
+            else
+              codes.delete_if { |code| code == r.code }
+            end
+          end
+          codes
+        end
+
+        def touching?(thumbsense_buffer)
+          !touch_released?(thumbsense_buffer)
         end
 
         # @return [TrueClass, FalseClass]
-        def touch_released?(buffer)
-          touch_num = buffer.events.count { |e| (e.record.status == "begin") }
-          release_num = buffer.events.count { |e| e.record.status == "end" }
+        def touch_released?(thumbsense_buffer)
+          thumbsense_events = thumbsense_buffer.events
+          touch_num = thumbsense_events.count { |e| (e.record.status == "begin") }
+          release_num = thumbsense_events.count { |e| e.record.status == "end" }
 
           touch_num <= release_num
         end
 
-        def palm_detected?(buffer)
-          buffer.events.any? { |e| (e.record.status == "palm") }
+        def palm_detected?(thumbsense_buffer)
+          thumbsense_buffer.events.any? { |e| (e.record.status == "palm") }
+        end
+
+        def palm_count(thumbsense_buffer)
+          thumbsense_buffer.events.count { |e| (e.record.status == "palm") }
+        end
+
+        def thumbsense_keys
         end
       end
     end
