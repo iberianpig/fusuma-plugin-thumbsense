@@ -56,11 +56,12 @@ module Fusuma
             end
 
             layer_manager.send_layer(layer: layer)
-            record = Events::Records::ContextRecord.new(
-              name: "thumbsense",
-              value: true
-            )
-            return create_event(record: record)
+            # FIXME: create thumbsense context
+            # record = Events::Records::ContextRecord.new(
+            #   name: "thumbsense",
+            #   value: true
+            # )
+            # return create_event(record: record)
           end
           nil
         end
