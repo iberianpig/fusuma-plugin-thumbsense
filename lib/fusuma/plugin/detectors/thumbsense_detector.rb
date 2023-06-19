@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "fusuma/plugin/detectors/detector"
-
 require "fusuma/plugin/remap/layer_manager"
+
+require "set"
 
 module Fusuma
   module Plugin
