@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.2.0](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.2.0) (2023-08-19)
+
+[Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.1.5...v0.2.0)
+
+## [v0.1.5](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.1.5) (2023-06-19)
+
+[Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.1.4...v0.1.5)
+
 ## [v0.1.4](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.1.4) (2023-06-19)
 
 [Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.1.3...v0.1.4)
