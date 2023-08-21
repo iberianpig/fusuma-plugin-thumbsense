@@ -200,6 +200,20 @@ module Fusuma
               expect(@detector.detect(@buffers)).to be_nil
             end
           end
+
+          context "with 1 finger thumbsense palm/begin/palm events in buffer" do
+            before do
+              [
+                thumbsense_generator(finger: 1, status: "palm"),
+                thumbsense_generator(finger: 1, status: "begin"),
+                thumbsense_generator(finger: 1, status: "palm")
+              ].each { |event| @thumbsense_buffer.buffer(event) }
+            end
+
+            it "does NOT detect thumbsense" do
+              expect(@detector.detect(@buffers)).to be_nil
+            end
+          end
         end
       end
     end
