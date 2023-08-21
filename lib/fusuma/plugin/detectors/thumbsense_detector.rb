@@ -36,7 +36,7 @@ module Fusuma
 
           return if thumbsense_buffer.empty?
 
-          MultiLogger.info("thumbsense_buffer: #{thumbsense_buffer.events.map(&:record).map { |r| "#{r.finger} #{r.gesture} #{r.status}" }}")
+          MultiLogger.debug("thumbsense_buffer: #{thumbsense_buffer.events.map(&:record).map { |r| "#{r.finger} #{r.gesture} #{r.status}" }}")
 
           layer_manager = Fusuma::Plugin::Remap::LayerManager.instance
 
@@ -122,7 +122,7 @@ module Fusuma
               touch_state_per_finger[f] = 0
             end
           end
-          touch_state_per_finger.values.all? { |count| count <= 0 }.tap { |r| MultiLogger.info("palm_detected?: #{r}") }
+          touch_state_per_finger.values.all? { |count| count <= 0 }
         end
       end
     end
