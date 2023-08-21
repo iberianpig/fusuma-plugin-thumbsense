@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "fusuma/plugin/thumbsense"
+require "rspec/debug"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
