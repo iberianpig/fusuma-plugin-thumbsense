@@ -15,23 +15,12 @@ Run the following code in your terminal.
 ### Install fusuma-plugin-thumbsense
 
 This plugin requires [fusuma](https://github.com/iberianpig/fusuma#update) 2.0 or later and [fusuma-plugin-keypress](https://github.com/iberianpig/fusuma-plugin-keypress) 0.5 or later.
+  - fusuma-plugin-keypress is used to get keyboard input and is installed automatically.
 
 ```sh
 $ sudo gem install fusuma-plugin-thumbsense
 ```
 
-### Add show-keycodes option
-
-Open `~/.config/fusuma/config.yml` and add the following code at the bottom.
-
-```yaml
-plugin:
-  inputs:
-    libinput_command_input:
-      show-keycodes: true
-```
-
-**NOTE: fusuma can read your keyboard inputs if show-keycodes option is true**
 
 ## Properties
 
