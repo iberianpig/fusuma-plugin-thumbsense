@@ -26,7 +26,10 @@ module Fusuma
         def keypress_generator(code:, status:, time: Time.now)
           Events::Event.new(
             time: time,
-            tag: "keypress_parser",
+            # NOTE: "remap_keyboard_input" is the original key event obtained from fusuma-plugin-remap
+            # The source of the event received by the keypress_buffer is usually "keypress_parser" tag,
+            # but if fusuma-plugin-remap is installed as a dependency, it will be "remap_keyboard_input" with plugin_default.
+            tag: "remap_keyboard_input",
             record: Events::Records::KeypressRecord.new(
               code: code,
               status: status
