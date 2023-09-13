@@ -1,12 +1,12 @@
 # Fusuma::Plugin::Thumbsense [![Gem Version](https://badge.fury.io/rb/fusuma-plugin-thumbsense.svg)](https://badge.fury.io/rb/fusuma-plugin-thumbsense) [![Build Status](https://github.com/iberianpig/fusuma-plugin-thumbsense/actions/workflows/main.yml/badge.svg)](https://github.com/iberianpig/fusuma-plugin-thumbsense/actions/workflows/main.yml)
 
+Remapper from key to click only while tapping the touchpad.  
+Implemented as [Fusuma](https://github.com/iberianpig/fusuma) Plugin.
+
 **THIS PLUGIN IS EXPERIMENTAL.**
 
-ThumbSense plugin for [Fusuma](https://github.com/iberianpig/fusuma)
-
-ThumbSense is a tool that lets you control a laptop's touchpad using the keyboard. It assigns certain keyboard keys as mouse buttons and switches between acting as mouse buttons or normal keyboard keys based on whether the user's thumb is touching the touchpad. ThumbSense aims to make it easier to use the touchpad without moving your hand away from the keyboard.
-
-[ThumbSense](https://www2.sonycsl.co.jp/person/rekimoto/tsense/soft/index.html)
+## What is ThumbSense?
+[ThumbSense](https://www2.sonycsl.co.jp/person/rekimoto/tsense/soft/index.html) is a tool that lets you control a laptop's touchpad using the keyboard. It assigns certain keyboard keys as mouse buttons and switches between acting as mouse buttons or normal keyboard keys based on whether the user's thumb is touching the touchpad. ThumbSense aims to make it easier to use the touchpad without moving your hand away from the keyboard.
 
 ## Installation
 
@@ -16,7 +16,8 @@ ThumbSense is a tool that lets you control a laptop's touchpad using the keyboar
 - [fusuma-plugin-keypress](https://github.com/iberianpig/fusuma-plugin-keypress) 0.5 or later
   - fusuma-plugin-keypress is used to get keyboard input and is installed automatically.
 - [fusuma-plugin-remap](https://github.com/iberianpig/fusuma-plugin-remap)
-  - Set up udev rules. Please refer to [fusuma-plugin-remap's README](https://github.com/iberianpig/fusuma-plugin-remap?tab=readme-ov-file#set-up-udev-rules) for details.
+  - You need to set up udev rules for creating a virtual input device.
+  - Please refer to [fusuma-plugin-remap's README](https://github.com/iberianpig/fusuma-plugin-remap?tab=readme-ov-file#set-up-udev-rules) for details.
 
 ### Install fusuma-plugin-thumbsense
 
