@@ -16,7 +16,7 @@ ThumbSense is a tool that lets you control a laptop's touchpad using the keyboar
 - [fusuma-plugin-keypress](https://github.com/iberianpig/fusuma-plugin-keypress) 0.5 or later
   - fusuma-plugin-keypress is used to get keyboard input and is installed automatically.
 - [fusuma-plugin-remap](https://github.com/iberianpig/fusuma-plugin-remap)
-  - /dev/uinput is required to write to the virtual device. Please refer to [fusuma-plugin-remap's README](https://github.com/iberianpig/fusuma-plugin-remap?tab=readme-ov-file#set-up-udev-rules) for details.
+  - Set up udev rules. Please refer to [fusuma-plugin-remap's README](https://github.com/iberianpig/fusuma-plugin-remap?tab=readme-ov-file#set-up-udev-rules) for details.
 
 ### Install fusuma-plugin-thumbsense
 
@@ -25,7 +25,6 @@ Run the following code in your terminal.
 ```sh
 $ sudo gem install fusuma-plugin-thumbsense
 ```
-
 
 ## Properties
 
