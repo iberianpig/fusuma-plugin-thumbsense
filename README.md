@@ -49,8 +49,14 @@ remap:
 
 ### TODO
 
-- Using the fusuma-plugin-sendkey to emulate mouse buttons
-- Creating a simple key remapper using evdev and uinput to prevent the pressing of J/K keys on the physical keyboard from being sent.
+- thumbsense
+  - [x] change layer of remap while tapping
+  - [ ] call executor like `command:`, `sendkey:`
+
+- remap
+  - [x] remap to single key like `remap: { J: BTN_LEFT }` 
+  - [ ] remap multiple keys like `remap: { H: LEFTCTRL+TAB }`
+  - [ ] send middle click `remap: { I: BTN_MIDDLE }`
 
 ## Contributing
 
