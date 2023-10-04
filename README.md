@@ -43,6 +43,10 @@ Set the following code in `~/.config/fusuma/config.yml`.
 context: thumbsense
 
 remap:
+  F: BTN_LEFT
+  E: BTN_MIDDLE
+  D: BTN_RIGHT
+  SPACE: BTN_LEFT
   J: BTN_LEFT
   K: BTN_RIGHT
 ```
@@ -55,8 +59,8 @@ remap:
 
 - remap
   - [x] remap to single key like `remap: { J: BTN_LEFT }` 
+  - [x] send BTN_LEFT/BTN_MIDDLE/BTN_RIGHT click `remap: { I: BTN_MIDDLE }`
   - [ ] remap multiple keys like `remap: { H: LEFTCTRL+TAB }`
-  - [ ] send middle click `remap: { I: BTN_MIDDLE }`
 
 ## Contributing
 
