@@ -61,6 +61,7 @@ remap:
   - [x] remap to single key like `remap: { J: BTN_LEFT }` 
   - [x] send BTN_LEFT/BTN_MIDDLE/BTN_RIGHT click `remap: { I: BTN_MIDDLE }`
   - [ ] remap multiple keys like `remap: { H: LEFTCTRL+TAB }`
+  - [ ] remap POINTER_MOTION to POINTER_SCROLL_FINGER `remap: { S: POINTER_SCROLL_FINGER }`
 
 ## Contributing
 
