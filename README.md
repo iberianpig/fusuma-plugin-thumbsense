@@ -17,28 +17,70 @@ Implemented as [Fusuma](https://github.com/iberianpig/fusuma) Plugin.
   - fusuma-plugin-keypress is used to get keyboard input and is installed automatically.
 - [fusuma-plugin-remap](https://github.com/iberianpig/fusuma-plugin-remap)
   - You need to set up udev rules for creating a virtual input device.
+  - fusuma-plugin-remap is installed automatically.
   - Please refer to [fusuma-plugin-remap's README](https://github.com/iberianpig/fusuma-plugin-remap?tab=readme-ov-file#set-up-udev-rules) for details.
 
-### Install fusuma-plugin-thumbsense
+### Install and set up fusuma-plugin-thumbsense
 
 Run the following code in your terminal.
 
+#### Install ruby-dev and build-essential for installing native extension
+```sh
+$ sudo apt install ruby-dev build-essential
+```
+
+#### Install libevdev-dev for building fusuma-plugin-remap
+```sh
+$ sudo apt install libevdev-dev
+```
+
+#### set up udev rules for creating a virtual input device (fusuma-plugin-remap)
+```sh
+$ echo 'KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"' | sudo tee /etc/udev/rules.d/60-udev-fusuma-remap.rules
+$ sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+
+#### Install fusuma-plugin-thumbsense
 ```sh
 $ sudo gem install fusuma-plugin-thumbsense
 ```
 
 ## Properties
 
-### Thumbsense
+### Thumbsense context
 
-First, add the `thumbsense` context to `~/.config/fusuma/config.yml`.
-The context is separated by `---` and specified by `context: thumbsense`.
+First, add the thumbsense `context` to `~/.config/fusuma/config.yml`.
+The `context` is separated by `---` and specified by `context: thumbsense`.
+Fusuma will switch to the `thumbsense` context while tapping the touchpad.
+
+### Remap key to mouse button
+
+You can remap keys to mouse buttons while tapping the touchpad.
+The `remap` property is specified in the `thumbsense` context.
+
+Available mouse buttons are:
+
+- `BTN_LEFT`
+- `BTN_MIDDLE`
+- `BTN_RIGHT`
+- `BTN_SIDE`
+- `BTN_EXTRA`
+- `BTN_FORWARD`
+- `BTN_BACK`
+- `BTN_TASK`
+- `BTN_0`
+- `BTN_1`
+-   ...
+- `BTN_9`
 
 ## Example
 
 Set the following code in `~/.config/fusuma/config.yml`.
 
 ```yaml
+# add thumbsense context
+
 ---
 context: thumbsense
 
@@ -51,11 +93,11 @@ remap:
   K: BTN_RIGHT
 ```
 
-### TODO
+## TODO
 
 - thumbsense
   - [x] change layer of remap while tapping
-  - [ ] call executor like `command:`, `sendkey:`
+  - [ ] make it possible to execute executor like `command:` `sendkey:`
 
 - remap
   - [x] remap to single key like `remap: { J: BTN_LEFT }` 
