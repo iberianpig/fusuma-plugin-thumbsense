@@ -5,7 +5,7 @@ module Fusuma
     module Buffers
       # manage events and generate command
       class ThumbsenseBuffer < Buffer
-        DEFAULT_SOURCE = "thumbsense_parser"
+        DEFAULT_SOURCE = "remap_touchpad_input"
 
         def config_param_types
           {

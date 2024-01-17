@@ -13,7 +13,7 @@ module Fusuma
         def thumbsense_generator(finger:, status:, time: Time.now)
           Events::Event.new(
             time: time,
-            tag: "thumbsense_parser",
+            tag: "remap_touchpad_input",
             record: Events::Records::GestureRecord.new(
               finger: finger,
               gesture: "thumbsense",
