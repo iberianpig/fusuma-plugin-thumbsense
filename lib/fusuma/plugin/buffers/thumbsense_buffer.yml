@@ -1,0 +1,4 @@
+plugin:
+  buffers:
+    thumbsense_buffer:
+      source: remap_touchpad_input
