@@ -20,8 +20,7 @@ module Fusuma
           # skip palm/begin record
           return if !ended?(@events.last)
 
-          released_finger = @events.last.record.finger
-          @events.delete_if { |e| e.record.finger == released_finger }
+          clear
         end
 
         # @param event [Event]

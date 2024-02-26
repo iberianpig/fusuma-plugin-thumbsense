@@ -10,6 +10,7 @@ module Fusuma
     module Detectors
       # Detect Thumbsense context and change remap layer of fusuma-plugin-remap
       class ThumbsenseDetector < Detector
+        # keypress buffer is used to detect modifier keys
         SOURCES = %w[thumbsense keypress].freeze
         BUFFER_TYPE = "thumbsense"
 
@@ -28,49 +29,64 @@ module Fusuma
         LAYER_CONTEXT = {thumbsense: true}.freeze
 
         # Detect Context event and change remap layer of fusuma-plugin-remap
-        # @param buffers [Array<Buffer>]
+        # @param buffers [Array<Buffer>] ThumbsenseBuffer, KeypressBuffer
         # @return [Event] if Thumbsense context is detected
+        # @return [Array<Event>] if Thumbsense context and Remap index are detected(when modifier keys are pressed)
         # @return [NilClass] if event is NOT detected
         def detect(buffers)
-          thumbsense_buffer = buffers.find { |b| b.type == BUFFER_TYPE }
-
-          return if thumbsense_buffer.empty?
-
-          MultiLogger.debug("thumbsense_buffer: #{thumbsense_buffer.events.map(&:record).map { |r| "#{r.finger} #{r.gesture} #{r.status}" }}")
+          thumbsense_buffer = find_thumbsense_buffer(buffers)
+          keypress_buffer = find_keypress_buffer(buffers)
 
           layer_manager = Fusuma::Plugin::Remap::LayerManager.instance
 
-          if touch_released?(thumbsense_buffer)
+          MultiLogger.debug("thumbsense_buffer: #{thumbsense_buffer.events.map(&:record).map { |r| "#{r.finger} #{r.gesture} #{r.status}" }}")
+
+          # layer is thumbsense => create thumbsense context and remap index
+          # touch is touching   => create thumbsense context and remap index
+          # touch is released   => remove thumbsense context
+          # keypress -> touch   => remove thumbsense context
+          if (touch_released?(thumbsense_buffer) && !thumbsense_layer?(keypress_buffer)) || keypress_first?(keypress_buffer, thumbsense_buffer)
             layer_manager.send_layer(layer: LAYER_CONTEXT, remove: true)
             return
           end
 
-          keypress_buffer = buffers.find { |b| b.type == "keypress" }
+          layer_manager.send_layer(layer: LAYER_CONTEXT)
 
-          # If only modifier keys are pressed or no key is pressed
-          if pressed_codes(keypress_buffer).all? { |code| MODIFIER_KEYS.include?(code) }
-
-            # Even if the palm is detected, keep the thumbsense layer until `:end` event
-            if palm_detected?(thumbsense_buffer)
-              layer_manager.send_layer(layer: LAYER_CONTEXT, remove: true)
-              return
-            end
-
-            layer_manager.send_layer(layer: LAYER_CONTEXT)
-
-            # create thumbsense context
-            record = Events::Records::ContextRecord.new(
+          # create thumbsense context
+          context = create_event(
+            record: Events::Records::ContextRecord.new(
               name: :thumbsense,
               value: true
             )
-            return create_event(record: record)
+          )
+
+          # create remap index if modifier keys are pressed
+          index = if (keys = pressed_codes(keypress_buffer)) && !keys.empty?
+            MultiLogger.debug("thumbsense context and remap index created: #{keys}")
+            combined_keys = keys.join("+")
+            create_event(
+              record: Events::Records::IndexRecord.new(
+                index: Config::Index.new([:remap, combined_keys])
+              )
+            )
           end
 
-          nil
+          [context, index].compact
         end
 
         private
 
+        # @param buffers [Array<Buffer>]
+        def find_thumbsense_buffer(buffers)
+          buffers.find { |b| b.type == BUFFER_TYPE }
+        end
+
+        # @param buffers [Array<Buffer>]
+        def find_keypress_buffer(buffers)
+          buffers.find { |b| b.type == "keypress" }
+        end
+
+        # @return [Array<String>]
         def pressed_codes(keypress_buffer)
           records = keypress_buffer.events.map(&:record)
           codes = []
@@ -84,45 +100,32 @@ module Fusuma
           codes
         end
 
+        # @return [TrueClass, FalseClass]
         def touching?(thumbsense_buffer)
           !touch_released?(thumbsense_buffer)
         end
 
         # @return [TrueClass, FalseClass]
         def touch_released?(thumbsense_buffer)
-          thumbsense_events = thumbsense_buffer.events
-          touch_num = thumbsense_events.count { |e| (e.record.status == "begin") }
-          release_num = thumbsense_events.count { |e| e.record.status == "end" }
+          return true if thumbsense_buffer.empty?
 
-          touch_num <= release_num
+          thumbsense_buffer.events.map(&:record).last&.status == "end"
         end
 
-        # Detect palm, except when there is another touch
-        # @param thumbsense_buffer [Buffer]
         # @return [TrueClass, FalseClass]
-        def palm_detected?(thumbsense_buffer)
-          # finger is a number to distinguish different touches and palms
-          # If the count remains, it is judged as a touch state
-          touch_state_per_finger = {}
-          thumbsense_buffer.events.each do |e|
-            f = e.record.finger
-            touch_state_per_finger[f] ||= 0
+        def thumbsense_layer?(keypress_buffer)
+          return if keypress_buffer.empty?
 
-            case e.record.status
-            when "begin"
-              touch_state_per_finger[f] += 1
-            when "palm"
-              if touch_state_per_finger[f] < 0
-                # NOTE: If Palm continues, it is equivalent to end
-                touch_state_per_finger[f] = 0
-              else
-                touch_state_per_finger[f] -= 1
-              end
-            when "end"
-              touch_state_per_finger[f] = 0
-            end
-          end
-          touch_state_per_finger.values.all? { |count| count <= 0 }
+          current_layer = keypress_buffer.events.last.record&.layer
+          current_layer && current_layer["thumbsense"]
+        end
+
+        # @return [TrueClass, FalseClass]
+        def keypress_first?(keypress_buffer, thumbsense_buffer)
+          return false if thumbsense_buffer.empty?
+          return false if keypress_buffer.empty?
+
+          keypress_buffer.events.last.time < thumbsense_buffer.events.last.time
         end
       end
     end
