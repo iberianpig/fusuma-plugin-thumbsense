@@ -12,7 +12,6 @@ module Fusuma
       class ThumbsenseDetector < Detector
         # keypress buffer is used to detect modifier keys
         SOURCES = %w[thumbsense keypress].freeze
-        BUFFER_TYPE = "thumbsense"
 
         MODIFIER_KEYS = Set.new(%w[
           CAPSLOCK
@@ -34,8 +33,8 @@ module Fusuma
         # @return [Array<Event>] if Thumbsense context and Remap index are detected(when modifier keys are pressed)
         # @return [NilClass] if event is NOT detected
         def detect(buffers)
-          thumbsense_buffer = find_thumbsense_buffer(buffers)
-          keypress_buffer = find_keypress_buffer(buffers)
+          @thumbsense_buffer ||= find_buffer(buffers, "thumbsense")
+          @keypress_buffer ||= find_buffer(buffers, "keypress")
 
           layer_manager = Fusuma::Plugin::Remap::LayerManager.instance
 
@@ -77,18 +76,15 @@ module Fusuma
         private
 
         # @param buffers [Array<Buffer>]
-        def find_thumbsense_buffer(buffers)
-          buffers.find { |b| b.type == BUFFER_TYPE }
-        end
-
-        # @param buffers [Array<Buffer>]
-        def find_keypress_buffer(buffers)
-          buffers.find { |b| b.type == "keypress" }
+        # @param type [String]
+        # @return [Buffer]
+        def find_buffer(buffers, type)
+          buffers.find { |b| b.type == type }
         end
 
         # @return [Array<String>]
-        def pressed_codes(keypress_buffer)
-          records = keypress_buffer.events.map(&:record)
+        def pressed_codes
+          records = @keypress_buffer.events.map(&:record)
           codes = []
           records.each do |r|
             if r.status == "pressed"
@@ -101,22 +97,25 @@ module Fusuma
         end
 
         # @return [TrueClass, FalseClass]
-        def touching?(thumbsense_buffer)
-          !touch_released?(thumbsense_buffer)
+        def touching?
+          !touch_released?(@thumbsense_buffer)
         end
 
         # @return [TrueClass, FalseClass]
-        def touch_released?(thumbsense_buffer)
-          return true if thumbsense_buffer.empty?
+        def touch_released?
+          return true if @thumbsense_buffer.empty?
 
-          thumbsense_buffer.events.map(&:record).last&.status == "end"
+          @thumbsense_buffer.events.map(&:record).last&.status == "end"
         end
 
         # @return [TrueClass, FalseClass]
-        def thumbsense_layer?(keypress_buffer)
-          return if keypress_buffer.empty?
+        def thumbsense_layer?
+          return if @keypress_buffer.empty?
 
-          current_layer = keypress_buffer.events.last.record&.layer
+          last_keypress = @keypress_buffer.events.last.record
+          return if last_keypress.status == "released"
+
+          current_layer = last_keypress&.layer
           current_layer && current_layer["thumbsense"]
         end
 
@@ -125,7 +124,7 @@ module Fusuma
           return false if thumbsense_buffer.empty?
           return false if keypress_buffer.empty?
 
-          keypress_buffer.events.last.time < thumbsense_buffer.events.last.time
+          @keypress_buffer.events.last.time < @thumbsense_buffer.events.first.time
         end
       end
     end
