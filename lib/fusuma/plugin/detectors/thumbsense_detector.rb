@@ -30,7 +30,7 @@ module Fusuma
         # Detect Context event and change remap layer of fusuma-plugin-remap
         # @param buffers [Array<Buffer>] ThumbsenseBuffer, KeypressBuffer
         # @return [Event] if Thumbsense context is detected
-        # @return [Array<Event>] if Thumbsense context and Remap index are detected(when modifier keys are pressed)
+        # @return [Array<Event>] if Thumbsense context and Remap index when keypress is detected
         # @return [NilClass] if event is NOT detected
         def detect(buffers)
           @thumbsense_buffer ||= find_buffer(buffers, "thumbsense")
@@ -38,17 +38,27 @@ module Fusuma
 
           layer_manager = Fusuma::Plugin::Remap::LayerManager.instance
 
-          MultiLogger.debug("thumbsense_buffer: #{thumbsense_buffer.events.map(&:record).map { |r| "#{r.finger} #{r.gesture} #{r.status}" }}")
-
           # layer is thumbsense => create thumbsense context and remap index
           # touch is touching   => create thumbsense context and remap index
           # touch is released   => remove thumbsense context
           # keypress -> touch   => remove thumbsense context
-          if (touch_released?(thumbsense_buffer) && !thumbsense_layer?(keypress_buffer)) || keypress_first?(keypress_buffer, thumbsense_buffer)
+          if touch_released? && !thumbsense_layer?
+            MultiLogger.debug("thumbsense context removed")
             layer_manager.send_layer(layer: LAYER_CONTEXT, remove: true)
             return
           end
 
+          # When keypress event is first:
+          # If current layer is thumbsense, the layer should not be changed
+          # If current layer is not thumbsense, it should remain a normal key
+          # In other words, if the key event comes first, do nothing
+          if keypress_first?
+            MultiLogger.debug("keypress event is first")
+
+            return
+          end
+
+          MultiLogger.debug("thumbsense context created") unless thumbsense_layer?
           layer_manager.send_layer(layer: LAYER_CONTEXT)
 
           # create thumbsense context
@@ -59,9 +69,10 @@ module Fusuma
             )
           )
 
-          # create remap index if modifier keys are pressed
-          index = if (keys = pressed_codes(keypress_buffer)) && !keys.empty?
-            MultiLogger.debug("thumbsense context and remap index created: #{keys}")
+          # TODO: Threshold
+          # create remap index
+          index = if (keys = pressed_codes) && !keys.empty?
+            MultiLogger.debug("thumbsense remap index created: #{keys}")
             combined_keys = keys.join("+")
             create_event(
               record: Events::Records::IndexRecord.new(
@@ -119,10 +130,18 @@ module Fusuma
           current_layer && current_layer["thumbsense"]
         end
 
-        # @return [TrueClass, FalseClass]
-        def keypress_first?(keypress_buffer, thumbsense_buffer)
-          return false if thumbsense_buffer.empty?
-          return false if keypress_buffer.empty?
+        # Check if keypress event is first, before thumbsense event
+        # If last keypress event is modifier key, return false
+        # @param keypress_buffer [Buffer]
+        # @param thumbsense_buffer [Buffer]
+        # @return [TrueClass] if keypress event is first
+        # @return [FalseClass] if keypress event is NOT first or buffers are empty
+        def keypress_first?
+          return false if @thumbsense_buffer.empty? || @keypress_buffer.empty?
+
+          if (keys = pressed_codes) && !keys.empty?
+            return false if MODIFIER_KEYS.include?(keys.first)
+          end
 
           @keypress_buffer.events.last.time < @thumbsense_buffer.events.first.time
         end

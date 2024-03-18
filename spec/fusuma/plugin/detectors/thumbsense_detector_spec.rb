@@ -150,6 +150,46 @@ module Fusuma
               expect(@detector.detect(@buffers)).to be_nil
             end
           end
+
+          context "with tap after pressing a modifier key" do
+            before do
+              @keypress_buffer.buffer(keypress_generator(code: "LEFTSHIFT", status: "pressed"))
+              @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
+              @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed", layer: {thumbsense: true}))
+            end
+
+            it "detects thumbsense" do
+              expect(Fusuma::Plugin::Remap::LayerManager.instance).to receive(:send_layer).with(layer: ThumbsenseDetector::LAYER_CONTEXT)
+
+              context_event, index_event = @detector.detect(@buffers)
+
+              expect(context_event.record).to be_a Events::Records::ContextRecord
+              expect(context_event.record.name).to eq :thumbsense
+
+              expect(index_event.record).to be_a Events::Records::IndexRecord
+              expect(index_event.record.index).to eq Config::Index.new([:remap, "LEFTSHIFT+J"])
+            end
+          end
+
+          context "with tap after pressing a non-modifier key" do
+            before do
+              @keypress_buffer.buffer(keypress_generator(code: "A", status: "pressed"))
+              @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
+              @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed"))
+            end
+
+            it "detects thumbsense" do
+              expect(Fusuma::Plugin::Remap::LayerManager.instance).to receive(:send_layer).with(layer: ThumbsenseDetector::LAYER_CONTEXT)
+
+              context_event, index_event = @detector.detect(@buffers)
+
+              expect(context_event.record).to be_a Events::Records::ContextRecord
+              expect(context_event.record.name).to eq :thumbsense
+
+              expect(index_event.record).to be_a Events::Records::IndexRecord
+              expect(index_event.record.index).to eq Config::Index.new([:remap, "A+J"])
+            end
+          end
         end
       end
     end
