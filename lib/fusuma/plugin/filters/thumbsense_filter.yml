@@ -1,5 +1,0 @@
-plugin:
-  inputs:
-    libinput_command_input:
-      verbose: true
-      disable-dwt: true
