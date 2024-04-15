@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.8.0](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.8.0) (2024-04-15)
+
+[Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.7.0...v0.8.0)
+
+**Merged pull requests:**
+
+- Integrate Fusuma-plugin-remap into Detector [\#3](https://github.com/iberianpig/fusuma-plugin-thumbsense/pull/3) ([iberianpig](https://github.com/iberianpig))
+
 ## [v0.7.0](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.7.0) (2023-09-24)
 
 [Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.6.0...v0.7.0)
