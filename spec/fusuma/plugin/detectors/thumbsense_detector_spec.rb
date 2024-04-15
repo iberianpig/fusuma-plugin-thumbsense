@@ -155,7 +155,6 @@ module Fusuma
             before do
               @keypress_buffer.buffer(keypress_generator(code: "LEFTSHIFT", status: "pressed"))
               @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
-              @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed", layer: {thumbsense: true}))
             end
 
             it "detects thumbsense" do
@@ -167,7 +166,25 @@ module Fusuma
               expect(context_event.record.name).to eq :thumbsense
 
               expect(index_event.record).to be_a Events::Records::IndexRecord
-              expect(index_event.record.index).to eq Config::Index.new([:remap, "LEFTSHIFT+J"])
+              expect(index_event.record.index).to eq Config::Index.new([:remap, "LEFTSHIFT"])
+            end
+
+            context "with add J key" do
+              before do
+                @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed", layer: {thumbsense: true}))
+              end
+
+              it "detects thumbsense" do
+                expect(Fusuma::Plugin::Remap::LayerManager.instance).to receive(:send_layer).with(layer: ThumbsenseDetector::LAYER_CONTEXT)
+
+                context_event, index_event = @detector.detect(@buffers)
+
+                expect(context_event.record).to be_a Events::Records::ContextRecord
+                expect(context_event.record.name).to eq :thumbsense
+
+                expect(index_event.record).to be_a Events::Records::IndexRecord
+                expect(index_event.record.index).to eq Config::Index.new([:remap, "LEFTSHIFT+J"])
+              end
             end
           end
 
@@ -175,19 +192,30 @@ module Fusuma
             before do
               @keypress_buffer.buffer(keypress_generator(code: "A", status: "pressed"))
               @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
-              @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed"))
             end
 
-            it "detects thumbsense" do
-              expect(Fusuma::Plugin::Remap::LayerManager.instance).to receive(:send_layer).with(layer: ThumbsenseDetector::LAYER_CONTEXT)
+            it "does NOT detect thumbsense" do
+              expect(Fusuma::Plugin::Remap::LayerManager.instance).not_to receive(:send_layer).with(layer: ThumbsenseDetector::LAYER_CONTEXT)
 
               context_event, index_event = @detector.detect(@buffers)
 
-              expect(context_event.record).to be_a Events::Records::ContextRecord
-              expect(context_event.record.name).to eq :thumbsense
+              expect(context_event).to be_nil
+              expect(index_event).to be_nil
+            end
 
-              expect(index_event.record).to be_a Events::Records::IndexRecord
-              expect(index_event.record.index).to eq Config::Index.new([:remap, "A+J"])
+            context "with add J key" do
+              before do
+                @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed", layer: {thumbsense: false}))
+              end
+
+              it "does NOT detect thumbsense" do
+                expect(Fusuma::Plugin::Remap::LayerManager.instance).not_to receive(:send_layer).with(layer: ThumbsenseDetector::LAYER_CONTEXT)
+
+                context_event, index_event = @detector.detect(@buffers)
+
+                expect(context_event).to be_nil
+                expect(index_event).to be_nil
+              end
             end
           end
         end

@@ -43,7 +43,7 @@ module Fusuma
           # touch is released   => remove thumbsense context
           # keypress -> touch   => remove thumbsense context
           if touch_released? && !thumbsense_layer?
-            MultiLogger.debug("thumbsense context removed")
+            MultiLogger.debug("thumbsense layer removed")
             layer_manager.send_layer(layer: LAYER_CONTEXT, remove: true)
             return
           end
@@ -143,7 +143,7 @@ module Fusuma
             return false if MODIFIER_KEYS.include?(keys.first)
           end
 
-          @keypress_buffer.events.last.time < @thumbsense_buffer.events.first.time
+          @keypress_buffer.events.first.time < @thumbsense_buffer.events.first.time
         end
       end
     end
