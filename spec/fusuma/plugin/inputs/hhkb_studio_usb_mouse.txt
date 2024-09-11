@@ -1,0 +1,41 @@
+# PFU Limited HHKB-Studio
+# 0x05, 0x01,                    // Usage Page (Generic Desktop)        0
+# 0x09, 0x02,                    // Usage (Mouse)                       2
+# 0xa1, 0x01,                    // Collection (Application)            4
+# 0x09, 0x01,                    //  Usage (Pointer)                    6
+# 0xa1, 0x00,                    //  Collection (Physical)              8
+# 0x05, 0x09,                    //   Usage Page (Button)               10
+# 0x19, 0x01,                    //   Usage Minimum (1)                 12
+# 0x29, 0x08,                    //   Usage Maximum (8)                 14
+# 0x15, 0x00,                    //   Logical Minimum (0)               16
+# 0x25, 0x01,                    //   Logical Maximum (1)               18
+# 0x95, 0x08,                    //   Report Count (8)                  20
+# 0x75, 0x01,                    //   Report Size (1)                   22
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              24
+# 0x05, 0x01,                    //   Usage Page (Generic Desktop)      26
+# 0x09, 0x30,                    //   Usage (X)                         28
+# 0x09, 0x31,                    //   Usage (Y)                         30
+# 0x15, 0x81,                    //   Logical Minimum (-127)            32
+# 0x25, 0x7f,                    //   Logical Maximum (127)             34
+# 0x95, 0x02,                    //   Report Count (2)                  36
+# 0x75, 0x08,                    //   Report Size (8)                   38
+# 0x81, 0x06,                    //   Input (Data,Var,Rel)              40
+# 0x09, 0x38,                    //   Usage (Wheel)                     42
+# 0x15, 0x81,                    //   Logical Minimum (-127)            44
+# 0x25, 0x7f,                    //   Logical Maximum (127)             46
+# 0x95, 0x01,                    //   Report Count (1)                  48
+# 0x75, 0x08,                    //   Report Size (8)                   50
+# 0x81, 0x06,                    //   Input (Data,Var,Rel)              52
+# 0x05, 0x0c,                    //   Usage Page (Consumer Devices)     54
+# 0x0a, 0x38, 0x02,              //   Usage (AC Pan)                    56
+# 0x15, 0x81,                    //   Logical Minimum (-127)            59
+# 0x25, 0x7f,                    //   Logical Maximum (127)             61
+# 0x95, 0x01,                    //   Report Count (1)                  63
+# 0x75, 0x08,                    //   Report Size (8)                   65
+# 0x81, 0x06,                    //   Input (Data,Var,Rel)              67
+# 0xc0,                          //  End Collection                     69
+# 0xc0,                          // End Collection                      70
+#
+R: 71 05 01 09 02 a1 01 09 01 a1 00 05 09 19 01 29 08 15 00 25 01 95 08 75 01 81 02 05 01 09 30 09 31 15 81 25 7f 95 02 75 08 81 06 09 38 15 81 25 7f 95 01 75 08 81 06 05 0c 0a 38 02 15 81 25 7f 95 01 75 08 81 06 c0 c0
+N: PFU Limited HHKB-Studio
+I: 3 04fe 0016
