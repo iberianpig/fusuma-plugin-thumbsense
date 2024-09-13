@@ -108,11 +108,6 @@ module Fusuma
         end
 
         # @return [TrueClass, FalseClass]
-        def touching?
-          !touch_released?(@thumbsense_buffer)
-        end
-
-        # @return [TrueClass, FalseClass]
         def touch_released?
           return true if @thumbsense_buffer.empty?
 
