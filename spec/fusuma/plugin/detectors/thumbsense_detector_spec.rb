@@ -84,6 +84,23 @@ module Fusuma
                 expect(index_event.record).to be_a Events::Records::IndexRecord
                 expect(index_event.record.index).to eq Config::Index.new([:remap, "LEFTSHIFT"])
               end
+
+              context "when touch is released" do
+                before do
+                  [
+                    thumbsense_generator(finger: 1, status: "end")
+                  ].each { |event| @thumbsense_buffer.buffer(event) }
+                end
+
+                it "does NOT detect thumbsense" do
+                  expect(Fusuma::Plugin::Remap::LayerManager.instance).to receive(:send_layer).with(layer: ThumbsenseDetector::LAYER_CONTEXT, remove: true)
+
+                  context_event, index_event = @detector.detect(@buffers)
+
+                  expect(context_event).to be_nil
+                  expect(index_event).to be_nil
+                end
+              end
             end
 
             context "when non-Modifier key is pressed" do

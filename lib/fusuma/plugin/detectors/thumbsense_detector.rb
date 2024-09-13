@@ -126,6 +126,8 @@ module Fusuma
           last_keypress = @keypress_buffer.events.last.record
           return if last_keypress.status == "released"
 
+          return if MODIFIER_KEYS.include?(last_keypress.code)
+
           current_layer = last_keypress&.layer
           current_layer && current_layer["thumbsense"]
         end
