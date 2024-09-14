@@ -82,11 +82,48 @@ remap:
   K: BTN_RIGHT
 ```
 
-## TODO List
+## Pointing Stick Support
+
+### Overview
+Fusuma::Plugin::Thumbsense provides experimental support for pointing stick devices. This functionality is currently limited to the **HHKB Studio** and utilizes HIDRAW. Please note that this feature is still in testing, and improvements may be made in future updates.
+
+see: https://github.com/iberianpig/fusuma-plugin-thumbsense/pull/4
+
+### Setting Up Udev Rules
+
+To use the pointing stick touch support, you need to set up the following Udev rules to ensure that the HHKB Studio device is correctly recognized:
+
+1. **Create the Udev Rule File**:
+   Create a Udev rule file with the following command:
+
+   ```sh
+   sudo nano /etc/udev/rules.d/60-udev-fusuma-thumbsense-hhkb-studio.rules
+   ```
+
+   Add the following content to the file:
+
+   ```plaintext
+   # HHKB Studio (USB)
+   KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="04fe", ATTRS{idProduct}=="0016", MODE="0666"
+   
+   # HHKB Studio (Bluetooth)
+   KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ENV{DEVPATH}=="/devices/virtual/misc/uhid/*:04FE:0016.*/hidraw*", MODE="0666"
+   ```
+
+2. **Reload the Udev Rules**:
+   Execute the following command to reload the Udev rules:
+
+   ```sh
+   sudo udevadm control --reload-rules && sudo udevadm trigger
+   ```
+
+## TODO LIST
 
 - ThumbSense
   - [x] Change remap layer while tapping
   - [x] Enable executing commands like `command:` and `sendkey:`
+  - [x] Support pointing stick devices(https://github.com/iberianpig/fusuma-plugin-thumbsense/pull/4)
+    - Now only HHKB Studio is supported using HIDRAW
 
 - Remap
   - [x] Remap to single key (e.g., `remap: { J: BTN_LEFT }`)
