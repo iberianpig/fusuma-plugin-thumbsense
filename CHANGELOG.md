@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.9.0](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.9.0) (2024-09-14)
+
+[Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.8.0...v0.9.0)
+
+**Implemented enhancements:**
+
+- Support Pointing Stick Input for HHKB Studio [\#4](https://github.com/iberianpig/fusuma-plugin-thumbsense/pull/4) ([iberianpig](https://github.com/iberianpig))
+
 ## [v0.8.0](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.8.0) (2024-04-15)
 
 [Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.7.0...v0.8.0)
