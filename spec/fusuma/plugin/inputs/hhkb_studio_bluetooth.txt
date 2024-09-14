@@ -1,0 +1,116 @@
+# HHKB-Studio1
+# 0x05, 0x01,                    // Usage Page (Generic Desktop)        0
+# 0x09, 0x06,                    // Usage (Keyboard)                    2
+# 0xa1, 0x01,                    // Collection (Application)            4
+# 0x85, 0x7f,                    //  Report ID (127)                    6
+# 0x05, 0x07,                    //  Usage Page (Keyboard)              8
+# 0x19, 0xe0,                    //  Usage Minimum (224)                10
+# 0x29, 0xe7,                    //  Usage Maximum (231)                12
+# 0x15, 0x00,                    //  Logical Minimum (0)                14
+# 0x25, 0x01,                    //  Logical Maximum (1)                16
+# 0x95, 0x08,                    //  Report Count (8)                   18
+# 0x75, 0x01,                    //  Report Size (1)                    20
+# 0x81, 0x02,                    //  Input (Data,Var,Abs)               22
+# 0x95, 0x01,                    //  Report Count (1)                   24
+# 0x75, 0x08,                    //  Report Size (8)                    26
+# 0x81, 0x01,                    //  Input (Cnst,Arr,Abs)               28
+# 0x05, 0x07,                    //  Usage Page (Keyboard)              30
+# 0x19, 0x00,                    //  Usage Minimum (0)                  32
+# 0x29, 0xff,                    //  Usage Maximum (255)                34
+# 0x15, 0x00,                    //  Logical Minimum (0)                36
+# 0x26, 0xff, 0x00,              //  Logical Maximum (255)              38
+# 0x95, 0x06,                    //  Report Count (6)                   41
+# 0x75, 0x08,                    //  Report Size (8)                    43
+# 0x81, 0x00,                    //  Input (Data,Arr,Abs)               45
+# 0x05, 0x08,                    //  Usage Page (LEDs)                  47
+# 0x19, 0x01,                    //  Usage Minimum (1)                  49
+# 0x29, 0x05,                    //  Usage Maximum (5)                  51
+# 0x95, 0x05,                    //  Report Count (5)                   53
+# 0x75, 0x01,                    //  Report Size (1)                    55
+# 0x91, 0x02,                    //  Output (Data,Var,Abs)              57
+# 0x95, 0x01,                    //  Report Count (1)                   59
+# 0x75, 0x03,                    //  Report Size (3)                    61
+# 0x91, 0x01,                    //  Output (Cnst,Arr,Abs)              63
+# 0xc0,                          // End Collection                      65
+# 0x05, 0x01,                    // Usage Page (Generic Desktop)        66
+# 0x09, 0x02,                    // Usage (Mouse)                       68
+# 0xa1, 0x01,                    // Collection (Application)            70
+# 0x85, 0x01,                    //  Report ID (1)                      72
+# 0x09, 0x01,                    //  Usage (Pointer)                    74
+# 0xa1, 0x00,                    //  Collection (Physical)              76
+# 0x05, 0x09,                    //   Usage Page (Button)               78
+# 0x19, 0x01,                    //   Usage Minimum (1)                 80
+# 0x29, 0x08,                    //   Usage Maximum (8)                 82
+# 0x15, 0x00,                    //   Logical Minimum (0)               84
+# 0x25, 0x01,                    //   Logical Maximum (1)               86
+# 0x95, 0x08,                    //   Report Count (8)                  88
+# 0x75, 0x01,                    //   Report Size (1)                   90
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              92
+# 0x05, 0x01,                    //   Usage Page (Generic Desktop)      94
+# 0x09, 0x30,                    //   Usage (X)                         96
+# 0x09, 0x31,                    //   Usage (Y)                         98
+# 0x15, 0x81,                    //   Logical Minimum (-127)            100
+# 0x25, 0x7f,                    //   Logical Maximum (127)             102
+# 0x95, 0x02,                    //   Report Count (2)                  104
+# 0x75, 0x08,                    //   Report Size (8)                   106
+# 0x81, 0x06,                    //   Input (Data,Var,Rel)              108
+# 0x09, 0x38,                    //   Usage (Wheel)                     110
+# 0x15, 0x81,                    //   Logical Minimum (-127)            112
+# 0x25, 0x7f,                    //   Logical Maximum (127)             114
+# 0x95, 0x01,                    //   Report Count (1)                  116
+# 0x75, 0x08,                    //   Report Size (8)                   118
+# 0x81, 0x06,                    //   Input (Data,Var,Rel)              120
+# 0x05, 0x0c,                    //   Usage Page (Consumer Devices)     122
+# 0x0a, 0x38, 0x02,              //   Usage (AC Pan)                    124
+# 0x15, 0x81,                    //   Logical Minimum (-127)            127
+# 0x25, 0x7f,                    //   Logical Maximum (127)             129
+# 0x95, 0x01,                    //   Report Count (1)                  131
+# 0x75, 0x08,                    //   Report Size (8)                   133
+# 0x81, 0x06,                    //   Input (Data,Var,Rel)              135
+# 0xc0,                          //  End Collection                     137
+# 0xc0,                          // End Collection                      138
+# 0x05, 0x01,                    // Usage Page (Generic Desktop)        139
+# 0x09, 0x80,                    // Usage (System Control)              141
+# 0xa1, 0x01,                    // Collection (Application)            143
+# 0x85, 0x02,                    //  Report ID (2)                      145
+# 0x19, 0x01,                    //  Usage Minimum (1)                  147
+# 0x2a, 0xb7, 0x00,              //  Usage Maximum (183)                149
+# 0x15, 0x01,                    //  Logical Minimum (1)                152
+# 0x26, 0xb7, 0x00,              //  Logical Maximum (183)              154
+# 0x95, 0x01,                    //  Report Count (1)                   157
+# 0x75, 0x10,                    //  Report Size (16)                   159
+# 0x81, 0x00,                    //  Input (Data,Arr,Abs)               161
+# 0xc0,                          // End Collection                      163
+# 0x05, 0x0c,                    // Usage Page (Consumer Devices)       164
+# 0x09, 0x01,                    // Usage (Consumer Control)            166
+# 0xa1, 0x01,                    // Collection (Application)            168
+# 0x85, 0x03,                    //  Report ID (3)                      170
+# 0x15, 0x01,                    //  Logical Minimum (1)                172
+# 0x26, 0x9c, 0x02,              //  Logical Maximum (668)              174
+# 0x19, 0x01,                    //  Usage Minimum (1)                  177
+# 0x2a, 0x9c, 0x02,              //  Usage Maximum (668)                179
+# 0x75, 0x10,                    //  Report Size (16)                   182
+# 0x95, 0x01,                    //  Report Count (1)                   184
+# 0x81, 0x00,                    //  Input (Data,Arr,Abs)               186
+# 0xc0,                          // End Collection                      188
+# 0x06, 0x60, 0xff,              // Usage Page (Vendor Usage Page 0xff60) 189
+# 0x09, 0x61,                    // Usage (Vendor Usage 0x61)           192
+# 0xa1, 0x01,                    // Collection (Application)            194
+# 0x85, 0x04,                    //  Report ID (4)                      196
+# 0x09, 0x75,                    //  Usage (Vendor Usage 0x75)          198
+# 0x15, 0x00,                    //  Logical Minimum (0)                200
+# 0x26, 0xff, 0x00,              //  Logical Maximum (255)              202
+# 0x95, 0x20,                    //  Report Count (32)                  205
+# 0x75, 0x08,                    //  Report Size (8)                    207
+# 0x81, 0x02,                    //  Input (Data,Var,Abs)               209
+# 0x09, 0x76,                    //  Usage (Vendor Usage 0x76)          211
+# 0x15, 0x00,                    //  Logical Minimum (0)                213
+# 0x26, 0xff, 0x00,              //  Logical Maximum (255)              215
+# 0x95, 0x20,                    //  Report Count (32)                  218
+# 0x75, 0x08,                    //  Report Size (8)                    220
+# 0x91, 0x02,                    //  Output (Data,Var,Abs)              222
+# 0xc0,                          // End Collection                      224
+#
+R: 225 05 01 09 06 a1 01 85 7f 05 07 19 e0 29 e7 15 00 25 01 95 08 75 01 81 02 95 01 75 08 81 01 05 07 19 00 29 ff 15 00 26 ff 00 95 06 75 08 81 00 05 08 19 01 29 05 95 05 75 01 91 02 95 01 75 03 91 01 c0 05 01 09 02 a1 01 85 01 09 01 a1 00 05 09 19 01 29 08 15 00 25 01 95 08 75 01 81 02 05 01 09 30 09 31 15 81 25 7f 95 02 75 08 81 06 09 38 15 81 25 7f 95 01 75 08 81 06 05 0c 0a 38 02 15 81 25 7f 95 01 75 08 81 06 c0 c0 05 01 09 80 a1 01 85 02 19 01 2a b7 00 15 01 26 b7 00 95 01 75 10 81 00 c0 05 0c 09 01 a1 01 85 03 15 01 26 9c 02 19 01 2a 9c 02 75 10 95 01 81 00 c0 06 60 ff 09 61 a1 01 85 04 09 75 15 00 26 ff 00 95 20 75 08 81 02 09 76 15 00 26 ff 00 95 20 75 08 91 02 c0
+N: HHKB-Studio1
+I: 5 04fe 0016

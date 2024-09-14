@@ -1,0 +1,4 @@
+plugin:
+  inputs:
+    pointing_stick_input:
+      device_name_pattern:

@@ -6,6 +6,7 @@ module Fusuma
       # manage events and generate command
       class ThumbsenseBuffer < Buffer
         DEFAULT_SOURCE = "remap_touchpad_input"
+        POINTING_STICK_SOURCE = "pointing_stick_input"
 
         def config_param_types
           {
@@ -26,30 +27,16 @@ module Fusuma
         # @param event [Event]
         # @return [NilClass, ThumbsenseBuffer]
         def buffer(event)
-          return if event&.tag != source
-
-          @events.push(event)
-          self
+          case event.tag
+          when source, POINTING_STICK_SOURCE
+            @events.push(event)
+            self
+          end
         end
 
         # return [Integer]
         def finger
           @events.map { |e| e.record.finger }.max
-        end
-
-        def empty?
-          @events.empty?
-        end
-
-        def present?
-          !empty?
-        end
-
-        def select_by_events(&block)
-          return enum_for(:select) unless block
-
-          events = @events.select(&block)
-          self.class.new events
         end
 
         def ended?(event)
