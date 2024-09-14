@@ -3,64 +3,54 @@
 Remapper from key to click only while tapping the touchpad.  
 Implemented as [Fusuma](https://github.com/iberianpig/fusuma) Plugin.
 
-**THIS PLUGIN IS EXPERIMENTAL.**
-
 ## What is ThumbSense?
 [ThumbSense](https://www2.sonycsl.co.jp/person/rekimoto/tsense/soft/index.html) is a tool that lets you control a laptop's touchpad using the keyboard. It assigns certain keyboard keys as mouse buttons and switches between acting as mouse buttons or normal keyboard keys based on whether the user's thumb is touching the touchpad. ThumbSense aims to make it easier to use the touchpad without moving your hand away from the keyboard.
 
 ## Installation
 
-### Requirements
+### Prerequisites
 
 - [fusuma](https://github.com/iberianpig/fusuma#update)  2.0 or later
-- [fusuma-plugin-keypress](https://github.com/iberianpig/fusuma-plugin-keypress) 0.5 or later
-  - fusuma-plugin-keypress is used to get keyboard input and is installed automatically.
-- [fusuma-plugin-remap](https://github.com/iberianpig/fusuma-plugin-remap)
-  - You need to set up udev rules for creating a virtual input device.
-  - fusuma-plugin-remap is installed automatically.
-  - Please refer to [fusuma-plugin-remap's README](https://github.com/iberianpig/fusuma-plugin-remap?tab=readme-ov-file#set-up-udev-rules) for details.
+- [fusuma-plugin-keypress](https://github.com/iberianpig/fusuma-plugin-keypress) 0.5 or later (automatically installed)
+- [fusuma-plugin-remap](https://github.com/iberianpig/fusuma-plugin-remap) (udev rules setup required)
 
-### Install and set up fusuma-plugin-thumbsense
+### Steps to Install and Set Up Fusuma::Plugin::Thumbsense
 
-Run the following code in your terminal.
-
-#### Install ruby-dev and build-essential for installing native extension
+1. Install the necessary packages for native extensions:
 ```sh
 $ sudo apt install ruby-dev build-essential
 ```
 
-#### Install libevdev-dev for building fusuma-plugin-remap
+2. Install the required library for building fusuma-plugin-remap:
 ```sh
 $ sudo apt install libevdev-dev
 ```
 
-#### set up udev rules for creating a virtual input device (fusuma-plugin-remap)
+3. Set up udev rules to create a virtual input device (for fusuma-plugin-remap):
 ```sh
 $ echo 'KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"' | sudo tee /etc/udev/rules.d/60-udev-fusuma-remap.rules
 $ sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
 
-
-#### Install fusuma-plugin-thumbsense
+4. Install fusuma-plugin-thumbsense:
 ```sh
 $ sudo gem install fusuma-plugin-thumbsense
 ```
 
-## Properties
+## Configuration
 
-### Thumbsense context
+### Thumbsense Context
 
-First, add the thumbsense `context` to `~/.config/fusuma/config.yml`.
-The `context` is separated by `---` and specified by `context: thumbsense`.
+To add the thumbsense `context`, edit `~/.config/fusuma/config.yml`.
+The `context` section is separated by `---` and specified as `context: thumbsense`.
 Fusuma will switch to the `thumbsense` context while tapping the touchpad.
 
-### Remap key to mouse button
+### Key to Mouse Button Remap
 
 You can remap keys to mouse buttons while tapping the touchpad.
-The `remap` property is specified in the `thumbsense` context.
+The `remap` property is configured within the `thumbsense` context.
 
-Available mouse buttons are:
-
+Available mouse buttons include:
 - `BTN_LEFT`
 - `BTN_MIDDLE`
 - `BTN_RIGHT`
@@ -74,13 +64,12 @@ Available mouse buttons are:
 -   ...
 - `BTN_9`
 
-## Example
+### Example Configuration
 
-Set the following code in `~/.config/fusuma/config.yml`.
+Add the following code to `~/.config/fusuma/config.yml`:
 
 ```yaml
-# add thumbsense context
-
+# Add thumbsense context
 ---
 context: thumbsense
 
@@ -93,17 +82,19 @@ remap:
   K: BTN_RIGHT
 ```
 
-## TODO
+## TODO List
 
-- thumbsense
-  - [x] change layer of remap while tapping
-  - [ ] make it possible to execute executor like `command:` `sendkey:`
+- ThumbSense
+  - [x] Change remap layer while tapping
+  - [x] Enable executing commands like `command:` and `sendkey:`
 
-- remap
-  - [x] remap to single key like `remap: { J: BTN_LEFT }` 
-  - [x] send BTN_LEFT/BTN_MIDDLE/BTN_RIGHT click `remap: { I: BTN_MIDDLE }`
-  - [ ] remap multiple keys like `remap: { H: LEFTCTRL+TAB }`
-  - [ ] remap POINTER_MOTION to POINTER_SCROLL_FINGER `remap: { S: POINTER_SCROLL_FINGER }`
+- Remap
+  - [x] Remap to single key (e.g., `remap: { J: BTN_LEFT }`)
+  - [x] Send mouse clicks with `remap: { I: BTN_MIDDLE }`
+  - [x] Remap multiple keys
+    - Support sending multiple keys with fusuma-plugin-sendkey(https://github.com/iberianpig/fusuma-plugin-sendkey/pull/34)
+      - `remap: { T: { sendkey: [LEFTSHIFT+F10, T, ENTER, ESC] } }`
+  - [ ] Remap POINTER_MOTION to POINTER_SCROLL_FINGER (e.g., `remap: { S: POINTER_SCROLL_FINGER }`)
 
 ## Contributing
 
