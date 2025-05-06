@@ -43,7 +43,6 @@ module Fusuma
           # touch is released   => remove thumbsense context
           # keypress -> touch   => remove thumbsense context
           if touch_released? && !thumbsense_layer?
-            MultiLogger.debug("thumbsense layer removed")
             layer_manager.send_layer(layer: LAYER_CONTEXT, remove: true)
             return
           end
@@ -58,7 +57,6 @@ module Fusuma
             return
           end
 
-          MultiLogger.debug("thumbsense context created") unless thumbsense_layer?
           layer_manager.send_layer(layer: LAYER_CONTEXT)
 
           # create thumbsense context
