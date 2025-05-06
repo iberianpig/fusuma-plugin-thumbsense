@@ -35,6 +35,9 @@ module Fusuma
         end
 
         def process_device_events(writer)
+          # If device_name_pattern is not set, this plugin is not used, so block the thread.
+          sleep if @device_name_pattern.nil?
+
           hidraw_device = find_hidraw_device(@device_name_pattern, wait: 3)
           hidraw_parser = select_hidraw_parser(hidraw_device.bustype)
 
