@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   # support focal (20.04LTS) 2.7
   spec.add_dependency "fusuma", ">= 3.2"
   spec.add_dependency "fusuma-plugin-keypress", ">= 0.11"
-  spec.add_dependency "fusuma-plugin-remap", ">= 0.4"
+  spec.add_dependency "fusuma-plugin-remap", ">= 0.10.0"
   spec.metadata = {
     "rubygems_mfa_required" => "true"
   }
