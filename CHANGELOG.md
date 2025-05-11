@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.10.0](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.10.0) (2025-05-11)
+
+[Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.9.0...v0.10.0)
+
+**Fixed bugs:**
+
+- Add support for Apple Magic Trackpad [\#5](https://github.com/iberianpig/fusuma-plugin-thumbsense/issues/5)
+
 ## [v0.9.0](https://github.com/iberianpig/fusuma-plugin-thumbsense/tree/v0.9.0) (2024-09-14)
 
 [Full Changelog](https://github.com/iberianpig/fusuma-plugin-thumbsense/compare/v0.8.0...v0.9.0)
