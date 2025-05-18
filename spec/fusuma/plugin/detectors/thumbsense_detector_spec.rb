@@ -44,6 +44,7 @@ module Fusuma
         describe "#detect" do
           context "with 1 finger thumbsense begin event in buffer" do
             before do
+              # - Touch begin (finger:1)
               [
                 thumbsense_generator(finger: 1, status: "begin")
               ].each { |event| @thumbsense_buffer.buffer(event) }
@@ -51,6 +52,7 @@ module Fusuma
 
             context "without keypress" do
               before do
+                # - Touch begin (finger:1)
                 @keypress_buffer.clear
               end
 
@@ -68,6 +70,8 @@ module Fusuma
 
             context "when Modifier key is pressed" do
               before do
+                # - Touch begin (finger:1)
+                # - LEFTSHIFT key pressed
                 [
                   keypress_generator(code: "LEFTSHIFT", status: "pressed", layer: {thumbsense: true})
                 ].each { |event| @keypress_buffer.buffer(event) }
@@ -87,6 +91,9 @@ module Fusuma
 
               context "when touch is released" do
                 before do
+                  # - Touch begin (finger:1)
+                  # - LEFTSHIFT key pressed
+                  # - Touch end (finger:1)
                   [
                     thumbsense_generator(finger: 1, status: "end")
                   ].each { |event| @thumbsense_buffer.buffer(event) }
@@ -105,6 +112,8 @@ module Fusuma
 
             context "when non-Modifier key is pressed" do
               before do
+                # - Touch begin (finger:1)
+                # - A key pressed
                 [
                   keypress_generator(code: "A", status: "pressed")
                 ].each { |event| @keypress_buffer.buffer(event) }
@@ -126,6 +135,8 @@ module Fusuma
 
           context "with 1 finger thumbsense begin/end events in buffer" do
             before do
+              # - Touch begin (finger:1)
+              # - Touch end (finger:1)
               [
                 thumbsense_generator(finger: 1, status: "begin"),
                 thumbsense_generator(finger: 1, status: "end")
@@ -143,6 +154,8 @@ module Fusuma
 
           context "with tap while pressing a key" do
             before do
+              # - J key pressed
+              # - Touch begin (finger:1)
               [
                 keypress_generator(code: "J", status: "pressed")
               ].each { |event| @keypress_buffer.buffer(event) }
@@ -158,6 +171,9 @@ module Fusuma
 
           context "with release tap while pressing a key" do
             before do
+              # - Touch begin (finger:1)
+              # - J key pressed
+              # - Touch end (finger:1)
               @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
               @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed", layer: {thumbsense: true}))
               @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "end"))
@@ -170,6 +186,8 @@ module Fusuma
 
           context "with tap after pressing a modifier key" do
             before do
+              # - LEFTSHIFT key pressed
+              # - Touch begin (finger:1)
               @keypress_buffer.buffer(keypress_generator(code: "LEFTSHIFT", status: "pressed"))
               @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
             end
@@ -188,6 +206,9 @@ module Fusuma
 
             context "with add J key" do
               before do
+                # - LEFTSHIFT key pressed
+                # - Touch begin (finger:1)
+                # - J key pressed
                 @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed", layer: {thumbsense: true}))
               end
 
@@ -207,6 +228,8 @@ module Fusuma
 
           context "with tap after pressing a non-modifier key" do
             before do
+              # - A key pressed
+              # - Touch begin (finger:1)
               @keypress_buffer.buffer(keypress_generator(code: "A", status: "pressed"))
               @thumbsense_buffer.buffer(thumbsense_generator(finger: 1, status: "begin"))
             end
@@ -222,6 +245,9 @@ module Fusuma
 
             context "with add J key" do
               before do
+                # - A key pressed
+                # - Touch begin (finger:1)
+                # - J key pressed
                 @keypress_buffer.buffer(keypress_generator(code: "J", status: "pressed", layer: {thumbsense: false}))
               end
 
