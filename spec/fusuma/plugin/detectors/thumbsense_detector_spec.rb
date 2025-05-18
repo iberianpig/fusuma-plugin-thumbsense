@@ -200,8 +200,8 @@ module Fusuma
               expect(context_event.record).to be_a Events::Records::ContextRecord
               expect(context_event.record.name).to eq :thumbsense
 
-              expect(index_event.record).to be_a Events::Records::IndexRecord
-              expect(index_event.record.index).to eq Config::Index.new([:remap, "LEFTSHIFT"])
+              # pressing a modifier key -> tap, index should not be created
+              expect(index_event).to be_nil
             end
 
             context "with add J key" do
@@ -222,6 +222,30 @@ module Fusuma
 
                 expect(index_event.record).to be_a Events::Records::IndexRecord
                 expect(index_event.record.index).to eq Config::Index.new([:remap, "LEFTSHIFT+J"])
+              end
+
+              context "with release J" do
+                before do
+                  # - LEFTSHIFT key pressed
+                  # - Touch begin (finger:1)
+                  # - J key pressed
+                  # - J key released
+                  @keypress_buffer.buffer(keypress_generator(code: "J", status: "released", layer: {thumbsense: true}))
+                end
+
+                it "detect thumbsense, but index should not be created" do
+                  expect(Fusuma::Plugin::Remap::LayerManager.instance).to receive(:send_layer).with(
+                    layer: ThumbsenseDetector::LAYER_CONTEXT
+                  )
+
+                  context_event, index_event = @detector.detect(@buffers)
+
+                  expect(context_event.record).to be_a Events::Records::ContextRecord
+                  expect(context_event.record.name).to eq :thumbsense
+
+                  # pressing a modifier key -> tap, index should not be created
+                  expect(index_event).to be_nil
+                end
               end
             end
           end

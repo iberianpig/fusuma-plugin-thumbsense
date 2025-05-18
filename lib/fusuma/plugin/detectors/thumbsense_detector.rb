@@ -47,11 +47,13 @@ module Fusuma
             return
           end
 
+          before_tap, after_tap = partition_keypress_with_first_tap
+
           # When keypress event is first:
           # If current layer is thumbsense, the layer should not be changed
           # If current layer is not thumbsense, it should remain a normal key
           # In other words, if the key event comes first, do nothing
-          if keypress_first?
+          if keypress_first?(before_tap)
             MultiLogger.debug("keypress event is first")
 
             return
@@ -67,9 +69,11 @@ module Fusuma
             )
           )
 
+          keys = pressed_codes(@keypress_buffer.events.map(&:record))
+
           # TODO: Threshold
           # create remap index
-          index = if (keys = pressed_codes) && !keys.empty?
+          index = if !pressed_codes(after_tap).empty?
             MultiLogger.debug("thumbsense remap index created: #{keys}")
             combined_keys = keys.join("+")
             create_event(
@@ -92,8 +96,7 @@ module Fusuma
         end
 
         # @return [Array<String>]
-        def pressed_codes
-          records = @keypress_buffer.events.map(&:record)
+        def pressed_codes(records)
           codes = []
           records.each do |r|
             if r.status == "pressed"
@@ -131,14 +134,32 @@ module Fusuma
         # @param thumbsense_buffer [Buffer]
         # @return [TrueClass] if keypress event is first
         # @return [FalseClass] if keypress event is NOT first or buffers are empty
-        def keypress_first?
-          return false if @thumbsense_buffer.empty? || @keypress_buffer.empty?
+        def keypress_first?(keypress_records)
+          return false if @thumbsense_buffer.empty? || keypress_records.empty?
 
-          if (keys = pressed_codes) && !keys.empty?
+          if (keys = pressed_codes(keypress_records)) && !keys.empty?
             return false if MODIFIER_KEYS.include?(keys.first)
           end
 
           @keypress_buffer.events.first.time < @thumbsense_buffer.events.first.time
+        end
+
+        def partition_keypress_with_first_tap
+          return [], [] if @thumbsense_buffer.empty?
+
+          first_tap_time = @thumbsense_buffer.events.first.time
+
+          before_tap = []
+          after_tap = []
+
+          @keypress_buffer.events.each do |event|
+            if event.time < first_tap_time
+              before_tap << event.record
+            else
+              after_tap << event.record
+            end
+          end
+          [before_tap, after_tap]
         end
       end
     end
