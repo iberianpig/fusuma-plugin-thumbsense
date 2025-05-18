@@ -3,7 +3,7 @@
 module Fusuma
   module Plugin
     module Thumbsense
-      VERSION = "0.10.0"
+      VERSION = "0.11.0"
     end
   end
 end
