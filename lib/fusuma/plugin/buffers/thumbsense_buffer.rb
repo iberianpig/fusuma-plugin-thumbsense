@@ -18,10 +18,7 @@ module Fusuma
         def clear_expired(*)
           return if @events.empty?
 
-          # skip palm/begin record
-          return if !ended?(@events.last)
-
-          clear
+          clear if ended? || cancelled?
         end
 
         # @param event [Event]
@@ -39,12 +36,16 @@ module Fusuma
           @events.map { |e| e.record.finger }.max
         end
 
-        def ended?(event)
-          event.record.status == "end"
+        def ended?
+          @events.last.record.status == "end"
         end
 
-        def begin?(event)
-          event.record.status == "begin"
+        def cancelled?
+          @events.last.record.status == "cancelled"
+        end
+
+        def begin?
+          @events.last.record.status == "begin"
         end
       end
     end

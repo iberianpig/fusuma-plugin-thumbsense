@@ -112,7 +112,7 @@ module Fusuma
         def touch_released?
           return true if @thumbsense_buffer.empty?
 
-          @thumbsense_buffer.events.map(&:record).last&.status == "end"
+          @thumbsense_buffer.ended? || @thumbsense_buffer.cancelled?
         end
 
         # @return [TrueClass, FalseClass]
