@@ -44,6 +44,7 @@ module Fusuma
           mouse_state = nil
 
           hidraw_parser.new(hidraw_device).parse do |new_state|
+            # Write state to pipe only when it changes
             next if mouse_state == new_state
 
             mouse_state = new_state
