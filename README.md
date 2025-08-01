@@ -117,6 +117,17 @@ To use the pointing stick touch support, you need to set up the following Udev r
    sudo udevadm control --reload-rules && sudo udevadm trigger
    ```
 
+### Configuration
+
+To enable pointing stick support for HHKB Studio, add the following configuration to your `~/.config/fusuma/config.yml`:
+
+```yaml
+plugin:
+  inputs:
+    pointing_stick_input:
+      device_name_pattern: HHKB-Studio
+```
+
 ## TODO LIST
 
 - ThumbSense
