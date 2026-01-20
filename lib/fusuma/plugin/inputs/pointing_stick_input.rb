@@ -50,8 +50,9 @@ module Fusuma
             mouse_state = new_state
             writer.puts(mouse_state)
           end
-        rescue Errno::EIO => e
-          MultiLogger.error "#{self.class.name}: #{e}"
+        rescue Errno::EIO, Errno::ENOENT => e
+          MultiLogger.error "#{self.class.name}: #{e.message}"
+          MultiLogger.info "Reconnecting pointing stick device..."
           retry
         end
 

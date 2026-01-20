@@ -11,8 +11,10 @@ module Fusuma
     module Inputs
       # Simple dummy parser class
       class Hidraw::DummyParser
-        def initialize(device)
+        # rubocop:disable Style/RedundantInitialize
+        def initialize(_device)
         end
+        # rubocop:enable Style/RedundantInitialize
 
         def parse
           yield "s1"
@@ -140,6 +142,35 @@ module Fusuma
             it "keeps blocking find_hidraw_device" do
               expect(subject).to receive(:sleep).with(no_args)
               subject.send(:process_device_events, StringIO.new)
+            end
+          end
+
+          context "when device is removed during operation (ENOENT)" do
+            it "logs error and retries" do
+              call_count = 0
+              allow(subject).to receive(:find_hidraw_device) do
+                call_count += 1
+                raise StopIteration if call_count > 2
+                fake_device
+              end
+
+              error_parser = Class.new do
+                # rubocop:disable Style/RedundantInitialize
+                def initialize(_device)
+                end
+                # rubocop:enable Style/RedundantInitialize
+
+                def parse
+                  raise Errno::ENOENT, "/sys/class/input/event4"
+                end
+              end
+
+              allow(subject).to receive(:select_hidraw_parser).and_return(error_parser)
+
+              expect(Fusuma::MultiLogger).to receive(:error).with(/No such file or directory/).twice
+              expect(Fusuma::MultiLogger).to receive(:info).with(/Reconnecting pointing stick device/).twice
+
+              expect { subject.send(:process_device_events, writer) }.to raise_error(StopIteration)
             end
           end
         end
