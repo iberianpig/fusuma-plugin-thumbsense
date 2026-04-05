@@ -2,6 +2,42 @@ require "spec_helper"
 require "fusuma/plugin/inputs/hidraw/device"
 
 module Fusuma::Plugin::Inputs
+  RSpec.describe Hidraw::DeviceFinder do
+    describe "#find_hidraw_path" do
+      let(:finder) { described_class.new }
+      let(:event_path) { "/sys/class/input/event4" }
+
+      context "when device path exists" do
+        before do
+          allow(File).to receive(:realpath)
+            .with(event_path)
+            .and_return("/sys/devices/pci0000:00/usb1/input/input4/event4")
+          allow(Dir).to receive(:glob).and_return(["/sys/devices/pci0000:00/usb1/hidraw/hidraw0"])
+          allow(File).to receive(:exist?).and_return(true)
+          allow(File).to receive(:readable?).and_return(true)
+        end
+
+        it "returns the hidraw device path" do
+          result = finder.send(:find_hidraw_path, event_path)
+          expect(result).to eq("/dev/hidraw0")
+        end
+      end
+
+      context "when device is removed during lookup (ENOENT)" do
+        before do
+          allow(File).to receive(:realpath)
+            .with(event_path)
+            .and_raise(Errno::ENOENT, event_path)
+        end
+
+        it "returns nil instead of raising exception" do
+          result = finder.send(:find_hidraw_path, event_path)
+          expect(result).to be_nil
+        end
+      end
+    end
+  end
+
   RSpec.describe Hidraw::Device do
     let(:hidraw_path) { "/dev/hidraw0" }
     let(:device) { described_class.new(hidraw_path: hidraw_path) }

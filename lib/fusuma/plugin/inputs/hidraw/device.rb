@@ -73,6 +73,9 @@ module Fusuma
             event_abs_path = File.realpath(event_path)
             parent_path = event_abs_path.gsub(%r{/input/input\d+/.*}, "")
             locate_hidraw_device(parent_path)
+          rescue Errno::ENOENT
+            # Device was removed during lookup
+            nil
           end
 
           def find_pointer_device_path(device_name_pattern)
